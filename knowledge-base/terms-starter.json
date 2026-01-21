@@ -1,0 +1,147 @@
+[
+  {
+    "term": "ABA",
+    "fullName": "Applied Behavior Analysis",
+    "category": "Therapy",
+    "definition": "A therapeutic approach that uses behavioral principles to encourage positive behaviors and reduce challenging ones. ABA therapy is one of the most common interventions for children with autism.",
+    "plainLanguage": "ABA is like a teaching method that breaks down skills into small steps and rewards progress. Think of it as a structured way to help your child learn new skills - from communication to daily living tasks - by practicing them repeatedly and celebrating successes.",
+    "examples": [
+      "An ABA therapist might help a child learn to ask for juice by rewarding them each time they say or sign 'juice'",
+      "Teaching handwashing by breaking it into steps: turn on water, wet hands, apply soap, rub hands, rinse, dry"
+    ],
+    "relatedTerms": ["DTT", "Natural Environment Teaching", "Positive Reinforcement"],
+    "documentTypes": ["IEP", "Therapy Notes", "Assessment Report"]
+  },
+  {
+    "term": "IEP",
+    "fullName": "Individualized Education Program",
+    "category": "Education",
+    "definition": "A legally binding document that outlines the special education services, accommodations, and goals for a child with disabilities in school.",
+    "plainLanguage": "An IEP is your child's personalized education plan. It lists what help your child will get at school, what they're working toward, and how progress will be measured. It's created by you, teachers, and specialists working together.",
+    "examples": [
+      "An IEP might include speech therapy twice a week and extra time on tests",
+      "Goals like 'improve ability to take turns in conversations' with specific measurements"
+    ],
+    "relatedTerms": ["504 Plan", "Annual Goals", "Accommodations", "Modifications"],
+    "documentTypes": ["IEP", "School Records"]
+  },
+  {
+    "term": "Echolalia",
+    "fullName": "Echolalia",
+    "category": "Communication",
+    "definition": "The repetition of words, phrases, or sounds that someone else has said. It can be immediate (right away) or delayed (hours or days later).",
+    "plainLanguage": "Echolalia is when your child repeats words or phrases they've heard. This might be lines from a favorite show, something you just said, or phrases they heard earlier. It's actually a common part of language development and can be your child's way of processing language or communicating.",
+    "examples": [
+      "You ask 'Do you want juice?' and your child repeats 'Do you want juice?' instead of answering",
+      "Your child repeatedly quotes lines from a favorite movie",
+      "Repeating the last few words of what someone says"
+    ],
+    "relatedTerms": ["Scripting", "Verbal Stimming", "Delayed Echolalia"],
+    "documentTypes": ["Speech Therapy Notes", "Assessment Report", "IEP"]
+  },
+  {
+    "term": "Sensory Processing",
+    "fullName": "Sensory Processing",
+    "category": "Sensory",
+    "definition": "How the nervous system receives, organizes, and responds to sensory information from the environment and the body.",
+    "plainLanguage": "Sensory processing is how your child's brain makes sense of what they see, hear, touch, taste, smell, and feel in their body. Some children with autism may be extra sensitive (sounds feel too loud) or less sensitive (not noticing when something is hot) to different sensations.",
+    "examples": [
+      "Being bothered by clothing tags or certain fabrics",
+      "Covering ears in loud environments",
+      "Seeking out spinning or jumping activities",
+      "Not noticing when hands are messy or face is dirty"
+    ],
+    "relatedTerms": ["Sensory Integration", "SPD", "Sensory Seeking", "Sensory Avoiding", "Occupational Therapy"],
+    "documentTypes": ["OT Evaluation", "Sensory Profile", "IEP"]
+  },
+  {
+    "term": "Stimming",
+    "fullName": "Self-Stimulatory Behavior",
+    "category": "Behavior",
+    "definition": "Repetitive body movements or sounds that provide sensory input. Also called self-stimulating behaviors.",
+    "plainLanguage": "Stimming refers to repetitive movements or sounds your child makes, like hand-flapping, rocking, or humming. These behaviors often help your child regulate their emotions, focus, or deal with overwhelming situations. Everyone stims to some degree (like tapping a pen), but it may be more noticeable in autistic children.",
+    "examples": [
+      "Flapping hands when excited or anxious",
+      "Rocking back and forth",
+      "Making repetitive sounds or humming",
+      "Spinning objects or themselves"
+    ],
+    "relatedTerms": ["Self-Regulation", "Sensory Seeking", "Repetitive Behaviors"],
+    "documentTypes": ["Behavior Plan", "IEP", "Assessment Report"]
+  },
+  {
+    "term": "Social Skills",
+    "fullName": "Social Skills",
+    "category": "Social",
+    "definition": "The abilities needed to interact and communicate effectively with others, including understanding social cues, taking turns, and maintaining conversations.",
+    "plainLanguage": "Social skills are the 'rules' of interacting with other people - things like making eye contact, taking turns in conversation, understanding body language, and knowing how close to stand to someone. Many children with autism benefit from explicitly learning these skills that others might pick up naturally.",
+    "examples": [
+      "Greeting someone when they enter a room",
+      "Waiting for a pause to add to a conversation",
+      "Understanding when someone is joking versus serious",
+      "Recognizing facial expressions and what they mean"
+    ],
+    "relatedTerms": ["Pragmatic Language", "Theory of Mind", "Perspective Taking", "Social Thinking"],
+    "documentTypes": ["IEP", "Social Skills Assessment", "Therapy Notes"]
+  },
+  {
+    "term": "Executive Function",
+    "fullName": "Executive Function",
+    "category": "Cognitive",
+    "definition": "A set of mental skills that help with planning, organizing, remembering details, and managing time and attention.",
+    "plainLanguage": "Executive function is like the brain's 'manager' - it helps your child plan ahead, stay organized, remember instructions, and switch between tasks. Many children with autism find these skills challenging, which is why they might have trouble with homework planning or transitioning between activities.",
+    "examples": [
+      "Planning the steps to complete a homework assignment",
+      "Remembering to bring home the right books from school",
+      "Stopping one activity and starting another",
+      "Keeping track of belongings"
+    ],
+    "relatedTerms": ["Working Memory", "Cognitive Flexibility", "Task Initiation", "Organization Skills"],
+    "documentTypes": ["IEP", "Neuropsychological Evaluation", "Progress Report"]
+  },
+  {
+    "term": "Accommodations",
+    "fullName": "Accommodations",
+    "category": "Education",
+    "definition": "Changes in how a student accesses learning or demonstrates knowledge, without changing what is being taught or expected.",
+    "plainLanguage": "Accommodations are helpful changes that don't make the work easier, but make it more accessible for your child. Think of them like ramps for someone in a wheelchair - they provide equal access. For example, extra time on tests or preferential seating near the teacher.",
+    "examples": [
+      "Extra time on tests and assignments",
+      "Use of a calculator for math problems",
+      "Preferential seating away from distractions",
+      "Frequent breaks during work",
+      "Visual schedules to understand daily routine"
+    ],
+    "relatedTerms": ["Modifications", "Supports", "IEP", "504 Plan"],
+    "documentTypes": ["IEP", "504 Plan"]
+  },
+  {
+    "term": "Meltdown",
+    "fullName": "Meltdown",
+    "category": "Behavior",
+    "definition": "An intense response to overwhelming situations, often involving a loss of behavioral control. Different from a tantrum because it's not purposeful or manipulative.",
+    "plainLanguage": "A meltdown happens when your child becomes completely overwhelmed and temporarily loses control. It's not a tantrum - it's not about getting something they want. It's more like their nervous system hitting 'overload' from too much sensory input, emotional stress, or changes in routine. The best response is staying calm and ensuring safety until it passes.",
+    "examples": [
+      "Crying, screaming, or shutting down after a loud, crowded event",
+      "Aggressive behavior when too many demands are placed at once",
+      "Becoming non-verbal or unresponsive when overstimulated"
+    ],
+    "relatedTerms": ["Shutdown", "Dysregulation", "Sensory Overload", "Fight or Flight Response"],
+    "documentTypes": ["Behavior Plan", "IEP", "Crisis Plan"]
+  },
+  {
+    "term": "AAC",
+    "fullName": "Augmentative and Alternative Communication",
+    "category": "Communication",
+    "definition": "Methods of communication that supplement or replace speech for people who have difficulty with spoken language.",
+    "plainLanguage": "AAC includes any tool or strategy that helps your child communicate besides talking. This can be as simple as pointing to pictures or as high-tech as a speech-generating device. Using AAC doesn't prevent speech development - in fact, it often helps it by reducing frustration and giving your child a way to express themselves.",
+    "examples": [
+      "Picture Exchange Communication System (PECS)",
+      "Communication apps on tablets (like Proloquo2Go)",
+      "Sign language",
+      "Communication boards with pictures or words"
+    ],
+    "relatedTerms": ["PECS", "Speech-Generating Device", "Visual Supports", "Sign Language"],
+    "documentTypes": ["IEP", "Speech Therapy Notes", "Communication Plan"]
+  }
+]
