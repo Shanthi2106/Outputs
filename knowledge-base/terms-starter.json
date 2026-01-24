@@ -4,10 +4,11 @@
     "fullName": "Applied Behavior Analysis",
     "category": "Therapy",
     "definition": "A therapeutic approach that uses behavioral principles to encourage positive behaviors and reduce challenging ones. ABA therapy is one of the most common interventions for children with autism.",
-    "plainLanguage": "ABA is like a teaching method that breaks down skills into small steps and rewards progress. Think of it as a structured way to help your child learn new skills - from communication to daily living tasks - by practicing them repeatedly and celebrating successes.",
+    "plainLanguage": "ABA is like a teaching method that breaks down skills into small steps and rewards progress. Think of it as a structured way to help your child learn new skills - from communication to daily living tasks - by practicing them repeatedly and celebrating successes. WHAT TO EXPECT: Typical ABA programs are 10-40 hours per week depending on your child's needs. Sessions should be individualized to your child's goals, not one-size-fits-all. QUESTIONS TO ASK: (1) What specific behaviors/skills will be targeted? (2) How will progress be measured and reported? (3) Will therapy happen at home, school, or clinic? (4) Who will supervise my child's program? RED FLAG: If you're told 'all kids get the same program' or progress data isn't shared regularly, ask for clarification.",
     "examples": [
       "An ABA therapist might help a child learn to ask for juice by rewarding them each time they say or sign 'juice'",
-      "Teaching handwashing by breaking it into steps: turn on water, wet hands, apply soap, rub hands, rinse, dry"
+      "Teaching handwashing by breaking it into steps: turn on water, wet hands, apply soap, rub hands, rinse, dry",
+      "Using a token board where your child earns stars for completing tasks, then trades stars for a preferred activity"
     ],
     "relatedTerms": ["DTT", "Natural Environment Teaching", "Positive Reinforcement"],
     "documentTypes": ["IEP", "Therapy Notes", "Assessment Report"]
@@ -17,12 +18,13 @@
     "fullName": "Individualized Education Program",
     "category": "Education",
     "definition": "A legally binding document that outlines the special education services, accommodations, and goals for a child with disabilities in school.",
-    "plainLanguage": "An IEP is your child's personalized education plan. It lists what help your child will get at school, what they're working toward, and how progress will be measured. It's created by you, teachers, and specialists working together.",
+    "plainLanguage": "An IEP is your child's personalized education plan. It lists what help your child will get at school, what they're working toward, and how progress will be measured. It's created by you, teachers, and specialists working together. YOUR RIGHTS: You are an EQUAL member of the IEP team - not a bystander. You can request an IEP meeting anytime. You can disagree with proposed goals or services. WHAT TO DO: (1) Review your child's IEP at least 2 weeks before the meeting so you can prepare questions. (2) Bring data from home - videos, notes about behaviors or skills. (3) Don't sign anything at the meeting if you need time to think. TIMELINE: IEPs are reviewed annually, but you can request changes anytime. Evaluations happen every 3 years. RED FLAGS: If the school says 'we don't do that here' or 'that's not in the budget' - these are not legal reasons to deny services your child needs.",
     "examples": [
       "An IEP might include speech therapy twice a week and extra time on tests",
-      "Goals like 'improve ability to take turns in conversations' with specific measurements"
+      "Goals like 'improve ability to take turns in conversations' with specific measurements",
+      "Accommodations like preferential seating, visual schedules, or access to sensory breaks"
     ],
-    "relatedTerms": ["504 Plan", "Annual Goals", "Accommodations", "Modifications"],
+    "relatedTerms": ["504 Plan", "Annual Goals", "Accommodations", "Modifications", "FAPE", "LRE"],
     "documentTypes": ["IEP", "School Records"]
   },
   {
@@ -143,5 +145,103 @@
     ],
     "relatedTerms": ["PECS", "Speech-Generating Device", "Visual Supports", "Sign Language"],
     "documentTypes": ["IEP", "Speech Therapy Notes", "Communication Plan"]
+  },
+  {
+    "term": "FAPE",
+    "fullName": "Free Appropriate Public Education",
+    "category": "Education",
+    "definition": "A legal right under IDEA that guarantees children with disabilities receive education services tailored to their needs at no cost to parents.",
+    "plainLanguage": "FAPE means your child has the legal right to receive special education and related services that are appropriate for their needs, and you don't pay for these services. This is not about getting the BEST education - it's about getting an APPROPRIATE one that allows your child to make progress. WHAT THIS MEANS FOR YOU: If the school says they can't provide a service your child needs, they may be violating FAPE. This is your strongest legal protection. QUESTIONS TO ASK: (1) How will the proposed services allow my child to make meaningful progress? (2) What data shows this level of service is appropriate? (3) If we disagree, what are our options? KEY POINT: 'Appropriate' is determined by YOUR child's needs, not what's typical or convenient for the school.",
+    "examples": [
+      "If your child needs daily speech therapy to make progress but only gets it once a week, this might not meet FAPE",
+      "The school must provide accommodations at no cost - you shouldn't have to buy equipment or pay for aides",
+      "If your child isn't making progress with current services, the IEP may need to be revised to meet FAPE"
+    ],
+    "relatedTerms": ["IEP", "IDEA", "LRE", "Accommodations"],
+    "documentTypes": ["IEP", "Prior Written Notice", "Due Process"]
+  },
+  {
+    "term": "BCBA",
+    "fullName": "Board Certified Behavior Analyst",
+    "category": "Therapy",
+    "definition": "A professional with graduate-level certification who designs and oversees ABA therapy programs for individuals with autism and other developmental disabilities.",
+    "plainLanguage": "A BCBA is the person who creates and supervises your child's ABA therapy program. Think of them as the 'architect' - they design the program, set goals, and train the therapists (RBTs) who work directly with your child. They have a master's degree and specialized certification. WHAT TO EXPECT: Your BCBA should meet with you regularly (monthly at minimum) to review data, adjust goals, and answer questions. They observe therapy sessions and make sure the program is working. QUESTIONS TO ASK: (1) How often will you observe my child's sessions? (2) When will we review progress and adjust goals? (3) Can I observe sessions and ask questions? (4) What's your approach to parent training? RED FLAG: If you rarely see your BCBA or they don't explain what's happening in therapy, speak up - supervision is a key part of quality ABA.",
+    "examples": [
+      "Your BCBA might create a program targeting communication, self-care, and social skills based on your child's assessment",
+      "During a monthly meeting, the BCBA reviews data graphs showing your child's progress on each goal",
+      "The BCBA trains you on strategies to use at home so skills generalize beyond therapy"
+    ],
+    "relatedTerms": ["ABA", "RBT", "Behavior Plan", "DTT"],
+    "documentTypes": ["ABA Treatment Plan", "Progress Report", "Therapy Notes"]
+  },
+  {
+    "term": "RBT",
+    "fullName": "Registered Behavior Technician",
+    "category": "Therapy",
+    "definition": "A paraprofessional who provides direct ABA therapy under the supervision of a BCBA.",
+    "plainLanguage": "An RBT is the person who works directly with your child during ABA therapy sessions. They follow the program designed by the BCBA and collect data on your child's progress. Think of them as the 'builder' who implements the architect's (BCBA's) plan. RBTs have specialized training but less education than BCBAs. WHAT TO EXPECT: RBTs work one-on-one with your child, running teaching trials, collecting data, and implementing behavior strategies. They should take data on EVERYTHING - this is how progress is measured. QUESTIONS TO ASK: (1) How long have you worked with children like mine? (2) How do you handle challenging behaviors? (3) Will you teach me strategies to use at home? GOOD SIGN: An RBT who takes frequent data, stays positive, and communicates well with you and the BCBA.",
+    "examples": [
+      "Your child's RBT might practice requesting snacks using PECS cards, recording each trial's success",
+      "The RBT uses a timer and visual schedule to help your child transition between activities",
+      "During sessions, the RBT takes data on a tablet, marking whether your child completed each task independently"
+    ],
+    "relatedTerms": ["ABA", "BCBA", "Data Collection", "Discrete Trial Training"],
+    "documentTypes": ["Session Notes", "Data Sheets", "Progress Report"]
+  },
+  {
+    "term": "PECS",
+    "fullName": "Picture Exchange Communication System",
+    "category": "Communication",
+    "definition": "A communication system that teaches children to exchange pictures for items or activities they want, systematically building communication skills.",
+    "plainLanguage": "PECS is a way for your child to communicate using pictures. Instead of speaking, your child hands you a picture of what they want. It starts simple (one picture) and builds to complex sentences using picture strips. IMPORTANT: PECS doesn't prevent speech - research shows it often helps children develop spoken language. WHAT TO EXPECT: PECS has 6 phases, starting with simple exchanges and progressing to commenting and answering questions. Progress typically takes months, not weeks. QUESTIONS TO ASK: (1) What phase is my child working on? (2) How can I use PECS at home? (3) When might we see speech emerge? (4) What pictures should I have at home? TIP: Keep PECS books accessible everywhere - car, grandma's house, etc. The more opportunities to communicate, the faster progress happens.",
+    "examples": [
+      "Your child brings you a picture of 'juice' to request a drink",
+      "Using a sentence strip: 'I want' + picture of 'cookie' to make a request",
+      "Your child uses PECS to tell you about seeing a dog during a walk: 'I see' + picture of 'dog'"
+    ],
+    "relatedTerms": ["AAC", "Visual Supports", "Communication Board", "Speech Therapy"],
+    "documentTypes": ["Communication Plan", "IEP", "Speech Therapy Notes"]
+  },
+  {
+    "term": "BIP",
+    "fullName": "Behavior Intervention Plan",
+    "category": "Behavior",
+    "definition": "A formal plan that outlines strategies to address challenging behaviors, based on understanding why the behavior happens (function).",
+    "plainLanguage": "A BIP is your child's 'behavior playbook' - it explains what triggers challenging behaviors, why they happen, and exactly what everyone should do to prevent and respond to them. It's based on an FBA (Functional Behavior Assessment) that figures out the PURPOSE of the behavior. CRITICAL: A good BIP focuses on teaching REPLACEMENT behaviors, not just stopping bad ones. WHAT TO EXPECT: The plan should be specific enough that anyone working with your child knows exactly what to do. It should include prevention strategies, not just consequences. QUESTIONS TO ASK: (1) What is the function (purpose) of this behavior? (2) What replacement behavior will we teach? (3) How will you know if the plan is working? (4) Will this plan be followed consistently across all settings? RED FLAG: A BIP that only lists punishments without teaching new skills usually doesn't work long-term.",
+    "examples": [
+      "If your child hits when frustrated: BIP teaches requesting a break using a break card, with staff immediately honoring break requests",
+      "For escape-motivated behavior: BIP includes offering choices, frequent breaks, and teaching 'help' sign to request assistance",
+      "When seeking attention: BIP schedules regular check-ins, teaches appropriate attention-seeking, and provides planned ignoring for inappropriate bids"
+    ],
+    "relatedTerms": ["FBA", "Replacement Behavior", "Function of Behavior", "Antecedent"],
+    "documentTypes": ["BIP", "IEP", "FBA Report"]
+  },
+  {
+    "term": "FBA",
+    "fullName": "Functional Behavior Assessment",
+    "category": "Behavior",
+    "definition": "A systematic process to identify why a challenging behavior occurs by analyzing what happens before, during, and after the behavior.",
+    "plainLanguage": "An FBA is detective work to figure out WHY your child does a certain behavior. It looks at: what happens right before (antecedent), the behavior itself, and what happens after (consequence). The goal is to understand the FUNCTION - is your child trying to get something, avoid something, get attention, or self-stimulate? Understanding this is KEY to creating an effective BIP. WHAT TO EXPECT: The team will observe your child, interview you, review data, and maybe do ABC (Antecedent-Behavior-Consequence) tracking. This takes time - usually 2-4 weeks. QUESTIONS TO ASK: (1) What methods will you use for the assessment? (2) Can I provide input about what I see at home? (3) When will we review the findings? (4) How will this lead to a BIP? YOUR INPUT MATTERS: You see your child in different settings - your observations are valuable data.",
+    "examples": [
+      "Observing that your child only tantrums before math class suggests the function is escape/avoidance",
+      "Noticing hitting happens when you're on the phone reveals the function is attention-seeking",
+      "Tracking shows self-stimulatory behavior increases when environment is understimulating, suggesting sensory-seeking function"
+    ],
+    "relatedTerms": ["BIP", "ABC Data", "Function of Behavior", "Replacement Behavior"],
+    "documentTypes": ["FBA Report", "IEP", "Behavior Assessment"]
+  },
+  {
+    "term": "Social Stories",
+    "fullName": "Social Stories",
+    "category": "Social",
+    "definition": "Short, personalized stories that describe social situations, explain expected behaviors, and help autistic individuals understand and navigate social scenarios.",
+    "plainLanguage": "Social Stories are customized short stories that explain social situations from your child's perspective. They describe what will happen, what people might do, and what your child can do. They're written in first person ('I will...') and use pictures when helpful. WHY THEY WORK: They preview situations, reducing anxiety and teaching expected behaviors without pressure. WHEN TO USE: Before new situations (first day of school, doctor visit), to address ongoing challenges (waiting in line, taking turns), or to teach social rules that aren't obvious. HOW TO CREATE: Keep sentences simple, focus on what TO do (not just what NOT to do), read them multiple times before the event, and include positive or reassuring statements. FREE RESOURCES: Many templates available online - search 'social story template' for your child's specific need.",
+    "examples": [
+      "A story about visiting the dentist: 'I will go to the dentist. The dentist will look at my teeth. Sometimes the dentist uses a small mirror. This might feel strange but it doesn't hurt. When I'm done, I can pick a sticker.'",
+      "For turn-taking: 'At recess, my friends want to use the swing. Sometimes I can swing first. Sometimes I wait for my turn. Waiting can be hard, but my turn will come. I can count to 20 while I wait.'",
+      "Before a fire drill: 'Sometimes at school, we have fire drills. The alarm will be VERY loud. I can cover my ears. We will walk outside quietly. When it's safe, we go back inside.'"
+    ],
+    "relatedTerms": ["Visual Supports", "Social Skills", "Perspective Taking"],
+    "documentTypes": ["IEP", "Social Skills Plan", "Behavior Support"]
   }
 ]

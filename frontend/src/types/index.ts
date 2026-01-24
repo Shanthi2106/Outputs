@@ -26,3 +26,23 @@ export interface ApiError {
   message: string;
   status?: number;
 }
+
+export interface Term {
+  term: string;
+  fullName: string;
+  category: string;
+  definition: string;
+  plainLanguage: string;
+  examples: string[];
+  relatedTerms: string[];
+  documentTypes: string[];
+}
+
+export interface SavedConversation {
+  id: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+  messages: Message[];
+  termsMentioned?: string[];
+}
