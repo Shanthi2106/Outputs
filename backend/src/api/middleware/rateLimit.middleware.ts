@@ -20,6 +20,12 @@ export function rateLimitMiddleware(
   res: Response,
   next: NextFunction
 ): void {
+  // Disable rate limiting in development mode for easier testing
+  if (config.nodeEnv === 'development') {
+    next();
+    return;
+  }
+
   const clientId = req.ip || 'unknown';
   const now = Date.now();
 

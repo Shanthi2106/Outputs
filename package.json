@@ -15,10 +15,20 @@
     "test:backend": "cd backend && npm test",
     "test:frontend": "cd frontend && npm test"
   },
-  "keywords": ["autism", "assistant", "ai", "healthcare", "education"],
+  "keywords": [
+    "autism",
+    "assistant",
+    "ai",
+    "healthcare",
+    "education"
+  ],
   "author": "Sai Prashanthi Vemula",
   "license": "UNLICENSED",
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "chroma": "^0.0.1",
+    "chromadb": "^3.2.2"
   }
 }

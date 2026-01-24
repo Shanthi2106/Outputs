@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import queryService from '../../services/QueryService';
+import knowledgeBaseService from '../../services/KnowledgeBaseService';
 import { validate, termQuerySchema, contextQuerySchema } from '../middleware/validation.middleware';
 import { logger } from '../../utils/logger';
 
@@ -63,6 +64,40 @@ router.post('/context', validate(contextQuerySchema), async (req: Request, res: 
     res.status(500).json({
       success: false,
       error: 'Failed to process context query',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+/**
+ * GET /api/v1/query/terms
+ * Get all autism-related terms from the knowledge base
+ */
+router.get('/terms', async (req: Request, res: Response) => {
+  try {
+    logger.info('Fetching all terms from knowledge base');
+
+    const terms = knowledgeBaseService.getAllTerms();
+
+    res.json({
+      success: true,
+      terms: terms.map((term) => ({
+        term: term.term,
+        fullName: term.fullName,
+        category: term.category,
+        definition: term.definition,
+        plainLanguage: term.plainLanguage,
+        examples: term.examples,
+        relatedTerms: term.relatedTerms,
+        documentTypes: term.documentTypes,
+      })),
+      count: terms.length,
+    });
+  } catch (error) {
+    logger.error('Error fetching terms:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch terms',
       message: error instanceof Error ? error.message : 'Unknown error',
     });
   }

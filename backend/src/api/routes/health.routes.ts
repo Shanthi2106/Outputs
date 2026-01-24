@@ -1,6 +1,10 @@
 import { Router, Request, Response } from 'express';
 import config from '../../config';
 import knowledgeBaseService from '../../services/KnowledgeBaseService';
+import vectorService from '../../services/VectorService';
+import vectorStoreService from '../../services/VectorStoreService';
+import embeddingService from '../../services/EmbeddingService';
+import { logger } from '../../utils/logger';
 
 const router = Router();
 
@@ -26,6 +30,10 @@ router.get('/health', (req: Request, res: Response) => {
       },
       knowledgeBase: {
         termsLoaded: knowledgeBaseService.getAllTerms().length,
+      },
+      vectorDatabase: {
+        chromaAvailable: vectorService.isAvailable(),
+        pineconeAvailable: vectorStoreService.isAvailable(),
       },
     },
   };
@@ -74,6 +82,62 @@ router.get('/live', (req: Request, res: Response) => {
     status: 'alive',
     timestamp: new Date().toISOString(),
   });
+});
+
+/**
+ * GET /api/v1/health/vector-db
+ * Vector database health check
+ */
+router.get('/vector-db', async (req: Request, res: Response) => {
+  try {
+    // Check ChromaDB (for document chunks)
+    const chromaHealth = await vectorService.checkHealth();
+    const chromaStats = await vectorService.getStats();
+
+    // Check Pinecone (for term storage)
+    const pineconeAvailable = vectorStoreService.isAvailable();
+
+    // Check embedding service
+    const embeddingModel = embeddingService.getDefaultModel();
+    const embeddingDimensions = embeddingService.getExpectedDimensions();
+    const cacheStats = embeddingService.getCacheStats();
+
+    const health = {
+      status: chromaHealth.status === 'healthy' ? 'healthy' : 'degraded',
+      timestamp: new Date().toISOString(),
+      chroma: {
+        configured: !!config.chromaUrl,
+        available: vectorService.isAvailable(),
+        status: chromaHealth.status,
+        initialized: chromaHealth.initialized,
+        collectionExists: chromaHealth.collectionExists,
+        collectionName: chromaStats.collectionName,
+        documentChunks: chromaStats.count,
+        error: chromaHealth.error,
+      },
+      pinecone: {
+        configured: !!config.pineconeApiKey,
+        available: pineconeAvailable,
+      },
+      embeddings: {
+        model: embeddingModel,
+        expectedDimensions: embeddingDimensions,
+        cacheSize: cacheStats.size,
+        cacheMaxSize: cacheStats.maxSize,
+      },
+    };
+
+    // Return 200 if healthy, 503 if degraded
+    const statusCode = health.status === 'healthy' ? 200 : 503;
+    res.status(statusCode).json(health);
+  } catch (error) {
+    logger.error('Error checking vector database health:', error);
+    res.status(503).json({
+      status: 'error',
+      timestamp: new Date().toISOString(),
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
 });
 
 export default router;

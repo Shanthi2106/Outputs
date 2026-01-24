@@ -44,6 +44,8 @@ autism-assistant/
 - **PostgreSQL** (for production) or SQLite (for development)
 - **Redis** (optional, for caching)
 - **AI API Key**: Either OpenAI or Anthropic
+- **ChromaDB** (for RAG/document storage) - can run locally via Docker
+- **Pinecone API Key** (optional, for term vector search)
 
 ### Step 1: Clone and Install
 
@@ -103,7 +105,45 @@ cp .env.example .env
 VITE_API_URL=http://localhost:3000/api/v1
 ```
 
-### Step 4: Set Up Database
+### Step 4: Set Up Vector Database (RAG)
+
+The application uses RAG (Retrieval-Augmented Generation) to provide context-aware responses from uploaded documents.
+
+**Quick Setup:**
+
+```bash
+cd backend
+
+# Start ChromaDB (if using Docker)
+docker run -d --name chromadb -p 8000:8000 chromadb/chroma
+
+# Initialize vector database
+npm run setup-vector-db
+
+# Verify RAG pipeline
+npm run verify-rag
+```
+
+**Detailed Setup:** See [RAG Setup Guide](./docs/RAG_SETUP_GUIDE.md) for complete instructions.
+
+**Environment Variables for RAG:**
+
+Add to `backend/.env`:
+```env
+# ChromaDB (for document chunks)
+CHROMA_URL=http://localhost:8000
+CHROMA_COLLECTION_NAME=autism-documents
+
+# Embedding Configuration
+EMBEDDING_MODEL=text-embedding-3-small
+EMBEDDING_DIMENSIONS=1536
+
+# Document Chunking
+CHUNK_SIZE=1000
+CHUNK_OVERLAP=200
+```
+
+### Step 5: Set Up Database
 
 ```bash
 cd backend
@@ -115,7 +155,7 @@ cd backend
 # npm run seed
 ```
 
-### Step 5: Run the Application
+### Step 6: Run the Application
 
 **Terminal 1 - Backend:**
 ```bash
@@ -146,6 +186,9 @@ npm run build        # Build for production
 npm start            # Run production build
 npm run lint         # Lint code
 npm test             # Run tests
+npm run setup-vector-db  # Initialize vector database
+npm run verify-rag       # Verify RAG pipeline
+npm run populate-vectors # Populate term vectors (Pinecone)
 ```
 
 ### Frontend Commands
@@ -205,7 +248,10 @@ Assistant: [Polite redirection to healthcare professionals]
 - **Framework:** Express.js
 - **AI:** OpenAI GPT-4 / Anthropic Claude
 - **Database:** PostgreSQL (production), SQLite (dev)
-- **Caching:** Redis
+- **Vector Database:** ChromaDB (document chunks), Pinecone (terms)
+- **Embeddings:** OpenAI text-embedding-3-small
+- **RAG:** Hybrid search with semantic + keyword matching
+- **Caching:** Redis, Embedding cache
 - **Logging:** Winston
 
 ### Frontend
@@ -247,6 +293,7 @@ See `knowledge-base/terms-starter.json` for the initial 10 terms.
 ### Utility Endpoints
 - `POST /api/v1/feedback` - Submit user feedback
 - `GET /health` - Health check
+- `GET /api/v1/health/vector-db` - Vector database health check
 
 ### Example API Call
 
@@ -312,6 +359,7 @@ UNLICENSED - Private project
 ## 🔗 Resources
 
 - [Project Documentation](./docs/)
+- [RAG Setup Guide](./docs/RAG_SETUP_GUIDE.md) - Complete RAG and vector database setup
 - [System Architecture](./docs/05_System_Architecture.md)
 - [User Stories](./docs/04_User_Stories_And_Acceptance_Criteria.md)
 - [Implementation Roadmap](./docs/03_Implementation_Roadmap.md)
