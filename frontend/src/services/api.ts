@@ -133,6 +133,8 @@ class ApiService {
     const response = await this.client.post('/conversation', {
       message,
       history: conversationHistory,
+    }, {
+      timeout: 120000, // 120 seconds timeout for AI responses
     });
     return response.data;
   }

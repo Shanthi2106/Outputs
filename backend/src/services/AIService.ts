@@ -24,6 +24,8 @@ export class AIService {
     if (config.aiProvider === 'openai' && config.openaiApiKey) {
       this.openaiClient = new OpenAI({
         apiKey: config.openaiApiKey,
+        timeout: 60000, // 60 second timeout
+        maxRetries: 2, // Retry failed requests up to 2 times
       });
       logger.info('OpenAI client initialized');
     } else if (config.aiProvider === 'anthropic' && config.anthropicApiKey) {

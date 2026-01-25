@@ -326,8 +326,26 @@ Remember: Parents come to you because Google gave them generic information. They
         foundTerms: mentionedTerms,
       };
     } catch (error) {
-      logger.error('Error in conversation handling:', error);
-      throw new Error('Failed to generate response');
+      logger.error('Error in conversation handling:', {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+      
+      // Preserve the original error message if it's meaningful
+      if (error instanceof Error) {
+        // If it's already a user-friendly error message, re-throw it
+        if (error.message.includes('API key') || 
+            error.message.includes('rate limit') ||
+            error.message.includes('Invalid') ||
+            error.message.includes('timeout') ||
+            error.message.includes('unavailable')) {
+          throw error;
+        }
+        // Otherwise, wrap with more context
+        throw new Error(`Failed to generate response: ${error.message}`);
+      }
+      
+      throw new Error('Failed to generate response. Please check your API keys and try again.');
     }
   }
 }

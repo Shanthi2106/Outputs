@@ -119,7 +119,14 @@ export default function ChatInterface({ initialMessages, conversationName }: Cha
         message: errorMessage,
         isNetworkError: error?.isNetworkError,
         baseURL: error?.baseURL,
+        status: error?.response?.status,
+        details: error?.response?.data?.details,
       });
+      
+      // If we have error details in development, show them
+      if (error?.response?.data?.details && import.meta.env.DEV) {
+        console.error('Error details:', error.response.data.details);
+      }
 
       // Add error message to chat
       const errorMessageObj: Message = {
