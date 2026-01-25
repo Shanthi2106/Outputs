@@ -1,0 +1,3 @@
+# Minimal requirements for ChromaDB
+# This allows pip to find compatible versions for your Python version
+chromadb>=0.4.0
