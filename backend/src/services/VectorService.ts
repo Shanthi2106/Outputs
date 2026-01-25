@@ -35,6 +35,7 @@ export class VectorService {
   private isInitialized: boolean = false;
   private lastHealthCheck: Date | null = null;
   private healthStatus: 'healthy' | 'unhealthy' | 'unknown' = 'unknown';
+  private textColumnName: string = 'text'; // Will be detected during initialization
 
   constructor() {
     // Initialize PostgreSQL connection pool
@@ -155,28 +156,86 @@ export class VectorService {
           await client.query('CREATE EXTENSION IF NOT EXISTS vector');
           logger.info('pgvector extension enabled');
 
-          // Create document_chunks table with vector column
-          logger.info(`Creating table: ${this.tableName}`);
-          await client.query(`
-            CREATE TABLE IF NOT EXISTS ${this.tableName} (
-              id VARCHAR(255) PRIMARY KEY,
-              document_id VARCHAR(255) NOT NULL,
-              text TEXT NOT NULL,
-              embedding vector(${config.embeddingDimensions}),
-              metadata JSONB NOT NULL,
-              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          // Check if table exists and get its schema
+          const tableExists = await client.query(`
+            SELECT EXISTS (
+              SELECT FROM information_schema.tables 
+              WHERE table_name = $1
             )
-          `);
+          `, [this.tableName]);
 
-          // Create indexes
+          if (!tableExists.rows[0].exists) {
+            // Create document_chunks table with vector column
+            logger.info(`Creating table: ${this.tableName}`);
+            await client.query(`
+              CREATE TABLE ${this.tableName} (
+                id VARCHAR(255) PRIMARY KEY,
+                document_id VARCHAR(255) NOT NULL,
+                text TEXT NOT NULL,
+                embedding vector(${config.embeddingDimensions}),
+                metadata JSONB NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+              )
+            `);
+          } else {
+            // Table exists, check and migrate schema if needed
+            logger.info(`Table ${this.tableName} already exists, checking schema...`);
+            
+            // Get existing columns
+            const existingColumns = await client.query(`
+              SELECT column_name 
+              FROM information_schema.columns 
+              WHERE table_name = $1
+            `, [this.tableName]);
+
+            const columnNames = existingColumns.rows.map(row => row.column_name);
+            
+            // Check if we need to add created_at column
+            if (!columnNames.includes('created_at')) {
+              logger.info('Adding created_at column to existing table...');
+              await client.query(`
+                ALTER TABLE ${this.tableName} 
+                ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+              `);
+            }
+
+            // Detect text column name (chunk_text or text)
+            if (columnNames.includes('chunk_text') && !columnNames.includes('text')) {
+              this.textColumnName = 'chunk_text';
+              logger.info('Using existing chunk_text column (will rename to text on next migration)');
+            } else if (columnNames.includes('text')) {
+              this.textColumnName = 'text';
+            } else {
+              // Neither exists, add text column
+              logger.info('Adding text column...');
+              await client.query(`
+                ALTER TABLE ${this.tableName} 
+                ADD COLUMN text TEXT
+              `);
+              this.textColumnName = 'text';
+            }
+          }
+
+          // Create indexes (only if they don't exist)
           await client.query(`
             CREATE INDEX IF NOT EXISTS idx_${this.tableName}_document_id 
             ON ${this.tableName} (document_id)
           `);
-          await client.query(`
-            CREATE INDEX IF NOT EXISTS idx_${this.tableName}_created_at 
-            ON ${this.tableName} (created_at)
-          `);
+          
+          // Check if created_at column exists before creating index
+          const createdAtCheck = await client.query(`
+            SELECT EXISTS (
+              SELECT FROM information_schema.columns 
+              WHERE table_name = $1 AND column_name = 'created_at'
+            )
+          `, [this.tableName]);
+
+          if (createdAtCheck.rows[0].exists) {
+            await client.query(`
+              CREATE INDEX IF NOT EXISTS idx_${this.tableName}_created_at 
+              ON ${this.tableName} (created_at)
+            `);
+          }
 
           // Create vector similarity search index (HNSW for better performance)
           logger.info('Creating vector similarity index...');
@@ -288,10 +347,10 @@ export class VectorService {
               const vectorString = `[${embedding.join(',')}]`;
 
               await client.query(
-                `INSERT INTO ${this.tableName} (id, document_id, text, embedding, metadata)
+                `INSERT INTO ${this.tableName} (id, document_id, ${this.textColumnName}, embedding, metadata)
                  VALUES ($1, $2, $3, $4::vector, $5::jsonb)
                  ON CONFLICT (id) DO UPDATE SET
-                   text = EXCLUDED.text,
+                   ${this.textColumnName} = EXCLUDED.${this.textColumnName},
                    embedding = EXCLUDED.embedding,
                    metadata = EXCLUDED.metadata`,
                 [
@@ -371,7 +430,7 @@ export class VectorService {
           SELECT 
             id,
             document_id,
-            text,
+            ${this.textColumnName} as text,
             metadata,
             1 - (embedding <=> $1::vector) as similarity
           FROM ${this.tableName}

@@ -2,6 +2,11 @@ import axios, { AxiosInstance } from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3004/api/v1';
 
+// Log API URL for debugging (only in development)
+if (import.meta.env.DEV) {
+  console.log('API Base URL:', API_BASE_URL);
+}
+
 class ApiService {
   private client: AxiosInstance;
 
@@ -68,7 +73,7 @@ class ApiService {
           
           // Provide more specific error messages based on the error
           if (error.code === 'ECONNREFUSED' || error.message?.includes('ECONNREFUSED')) {
-            errorMessage = `Cannot connect to backend server at ${baseURL}. Please ensure the backend server is running on port 3000.`;
+            errorMessage = `Cannot connect to backend server at ${baseURL}. Please ensure the backend server is running on port 3004.`;
           } else if (error.code === 'ETIMEDOUT' || error.message?.includes('timeout')) {
             errorMessage = `Request timed out while connecting to ${baseURL}. The server may be slow or unreachable.`;
           } else if (error.code === 'ENOTFOUND' || error.message?.includes('ENOTFOUND')) {
