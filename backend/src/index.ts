@@ -152,9 +152,9 @@ try {
     
     // Check vector service status
     if (vectorService.isAvailable()) {
-      logger.info('Vector database (Chroma RAG) is available');
+      logger.info('Vector database (PostgreSQL pgvector) is available');
     } else {
-      logger.warn('Vector database (Chroma RAG) is not available - configure CHROMA_URL to enable');
+      logger.warn('Vector database (PostgreSQL pgvector) is not available - configure DATABASE_URL to enable');
     }
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('');

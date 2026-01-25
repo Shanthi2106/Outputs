@@ -32,7 +32,7 @@ router.get('/health', (req: Request, res: Response) => {
         termsLoaded: knowledgeBaseService.getAllTerms().length,
       },
       vectorDatabase: {
-        chromaAvailable: vectorService.isAvailable(),
+        postgresAvailable: vectorService.isAvailable(),
         pineconeAvailable: vectorStoreService.isAvailable(),
       },
     },
@@ -90,9 +90,9 @@ router.get('/live', (req: Request, res: Response) => {
  */
 router.get('/vector-db', async (req: Request, res: Response) => {
   try {
-    // Check ChromaDB (for document chunks)
-    const chromaHealth = await vectorService.checkHealth();
-    const chromaStats = await vectorService.getStats();
+    // Check PostgreSQL vector storage (for document chunks)
+    const postgresHealth = await vectorService.checkHealth();
+    const postgresStats = await vectorService.getStats();
 
     // Check Pinecone (for term storage)
     const pineconeAvailable = vectorStoreService.isAvailable();
@@ -103,17 +103,17 @@ router.get('/vector-db', async (req: Request, res: Response) => {
     const cacheStats = embeddingService.getCacheStats();
 
     const health = {
-      status: chromaHealth.status === 'healthy' ? 'healthy' : 'degraded',
+      status: postgresHealth.status === 'healthy' ? 'healthy' : 'degraded',
       timestamp: new Date().toISOString(),
-      chroma: {
-        configured: !!config.chromaUrl,
+      postgres: {
+        configured: !!config.databaseUrl,
         available: vectorService.isAvailable(),
-        status: chromaHealth.status,
-        initialized: chromaHealth.initialized,
-        collectionExists: chromaHealth.collectionExists,
-        collectionName: chromaStats.collectionName,
-        documentChunks: chromaStats.count,
-        error: chromaHealth.error,
+        status: postgresHealth.status,
+        initialized: postgresHealth.initialized,
+        tableExists: postgresHealth.collectionExists,
+        tableName: postgresStats.collectionName,
+        documentChunks: postgresStats.count,
+        error: postgresHealth.error,
       },
       pinecone: {
         configured: !!config.pineconeApiKey,

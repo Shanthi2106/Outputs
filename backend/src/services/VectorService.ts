@@ -1,4 +1,4 @@
-import { ChromaClient } from 'chromadb';
+import { Pool } from 'pg';
 import config from '../config';
 import { logger } from '../utils/logger';
 import embeddingService from './EmbeddingService';
@@ -30,83 +30,38 @@ export interface SearchResult {
 }
 
 export class VectorService {
-  private chromaClient?: ChromaClient;
-  private collectionName: string;
+  private pool?: Pool;
+  private tableName: string = 'document_chunks';
   private isInitialized: boolean = false;
   private lastHealthCheck: Date | null = null;
   private healthStatus: 'healthy' | 'unhealthy' | 'unknown' = 'unknown';
 
   constructor() {
-    this.collectionName = config.chromaCollectionName || 'autism-documents';
-
-    // Check if ChromaDB is configured (cloud or local)
-    const hasLocalChroma = config.chromaUrl && config.chromaUrl.trim() !== '';
-    const hasValidApiKey = config.chromaApiKey && 
-                           config.chromaApiKey.trim() !== '' && 
-                           !config.chromaApiKey.toLowerCase().includes('your_api_key') &&
-                           !config.chromaApiKey.toLowerCase().includes('placeholder');
-    const hasCloudChroma = config.chromaHost && hasValidApiKey;
-
-    if (!hasLocalChroma && !hasCloudChroma) {
-      if (config.chromaHost && !hasValidApiKey) {
-        logger.warn('ChromaDB Cloud host configured but API key is missing or invalid.');
-        logger.warn('Please set CHROMA_API_KEY to a valid API key, or use local ChromaDB with CHROMA_URL.');
-      }
-      logger.info('ChromaDB disabled. Vector embeddings will be generated but not stored in ChromaDB.');
-      logger.info('EmbeddingService is still available for generating embeddings.');
+    // Initialize PostgreSQL connection pool
+    if (!config.databaseUrl) {
+      logger.warn('DATABASE_URL not configured. Vector storage will be disabled.');
       this.healthStatus = 'unhealthy';
       return;
     }
 
     try {
-      // Prioritize cloud configuration over local
-      if (hasCloudChroma) {
-        // ChromaDB Cloud configuration
-        const clientConfig: any = {
-          host: config.chromaHost,
-          port: 443,
-          ssl: true,
-          headers: {
-            'Authorization': `Bearer ${config.chromaApiKey}`,
-            'X-Chroma-Token': config.chromaApiKey, // Also include for compatibility
-          },
-        };
+      this.pool = new Pool({
+        connectionString: config.databaseUrl,
+        max: 20, // Maximum number of clients in the pool
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 2000,
+      });
 
-        // Add tenant and database if provided
-        if (config.chromaTenant) {
-          clientConfig.tenant = config.chromaTenant;
-        }
-        if (config.chromaDatabase) {
-          clientConfig.database = config.chromaDatabase;
-        }
+      // Handle pool errors
+      this.pool.on('error', (err) => {
+        logger.error('Unexpected error on idle PostgreSQL client', err);
+        this.healthStatus = 'unhealthy';
+      });
 
-        this.chromaClient = new ChromaClient(clientConfig);
-        logger.info('VectorService initialized with ChromaDB Cloud', {
-          host: config.chromaHost,
-          tenant: config.chromaTenant || 'default',
-          database: config.chromaDatabase || 'default',
-          collection: this.collectionName,
-        });
-      } else if (hasLocalChroma) {
-        // Local ChromaDB configuration
-        this.chromaClient = new ChromaClient({
-          path: config.chromaUrl,
-        });
-        logger.info('VectorService initialized with ChromaDB (local)', {
-          url: config.chromaUrl,
-          collection: this.collectionName,
-        });
-      }
+      logger.info('VectorService initialized with PostgreSQL (pgvector)');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      logger.error('Failed to initialize Chroma client:', errorMessage);
-      if (hasCloudChroma) {
-        logger.error('ChromaDB Cloud connection failed. Please verify:');
-        logger.error(`  - CHROMA_HOST: ${config.chromaHost}`);
-        logger.error(`  - CHROMA_API_KEY: ${config.chromaApiKey ? '***' + config.chromaApiKey.slice(-4) : 'NOT SET'}`);
-        logger.error(`  - CHROMA_TENANT: ${config.chromaTenant || 'NOT SET'}`);
-        logger.error(`  - CHROMA_DATABASE: ${config.chromaDatabase || 'NOT SET'}`);
-      }
+      logger.error('Failed to initialize PostgreSQL pool:', errorMessage);
       this.healthStatus = 'unhealthy';
     }
   }
@@ -156,7 +111,10 @@ export class VectorService {
         errorMessage.includes('timeout') ||
         errorMessage.includes('network') ||
         errorCode === 'ECONNREFUSED' ||
-        errorCode === 'ETIMEDOUT') {
+        errorCode === 'ETIMEDOUT' ||
+        errorCode === '57P01' || // PostgreSQL: terminating connection due to administrator command
+        errorCode === '57P02' || // PostgreSQL: terminating connection due to connection lost
+        errorCode === '57P03') { // PostgreSQL: terminating connection due to idle-in-transaction timeout
       return true;
     }
 
@@ -174,11 +132,11 @@ export class VectorService {
   }
 
   /**
-   * Initialize the Chroma collection (get or create)
+   * Initialize the PostgreSQL database with pgvector extension and table
    */
   async initialize(): Promise<void> {
-    if (!this.chromaClient) {
-      logger.warn('Chroma client not available. Skipping initialization.');
+    if (!this.pool) {
+      logger.warn('PostgreSQL pool not available. Skipping initialization.');
       this.healthStatus = 'unhealthy';
       return;
     }
@@ -189,39 +147,66 @@ export class VectorService {
 
     try {
       await this.retryOperation(async () => {
-        // Use getOrCreateCollection to avoid race conditions and duplicate errors
-        // This method will return existing collection or create a new one
-        logger.info(`Getting or creating Chroma collection: ${this.collectionName}`);
+        const client = await this.pool!.connect();
+        
         try {
-          const collection = await this.chromaClient!.getOrCreateCollection({
-            name: this.collectionName,
-            metadata: {
-              description: 'Document chunks for autism-related documents',
-              created: new Date().toISOString(),
-            },
-          });
-          logger.info(`Chroma collection ${this.collectionName} ready`);
-        } catch (error: any) {
-          // Handle ChromaUniqueError or similar errors if collection already exists
-          const errorMessage = error?.message || String(error);
-          const errorName = error?.name || '';
-          
-          // Check if it's a unique constraint error (collection already exists)
-          if (errorName.includes('Unique') || 
-              errorName.includes('ChromaUniqueError') ||
-              errorMessage.toLowerCase().includes('already exists') ||
-              errorMessage.toLowerCase().includes('unique constraint') ||
-              errorMessage.toLowerCase().includes('duplicate')) {
-            // Collection already exists, try to get it instead
-            logger.info(`Collection ${this.collectionName} already exists, retrieving it...`);
-            const collection = await this.chromaClient!.getCollection({ name: this.collectionName });
-            logger.info(`Retrieved existing Chroma collection: ${this.collectionName}`);
-          } else {
-            // Different error, re-throw it
-            throw error;
+          // Enable pgvector extension
+          logger.info('Enabling pgvector extension...');
+          await client.query('CREATE EXTENSION IF NOT EXISTS vector');
+          logger.info('pgvector extension enabled');
+
+          // Create document_chunks table with vector column
+          logger.info(`Creating table: ${this.tableName}`);
+          await client.query(`
+            CREATE TABLE IF NOT EXISTS ${this.tableName} (
+              id VARCHAR(255) PRIMARY KEY,
+              document_id VARCHAR(255) NOT NULL,
+              text TEXT NOT NULL,
+              embedding vector(${config.embeddingDimensions}),
+              metadata JSONB NOT NULL,
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+          `);
+
+          // Create indexes
+          await client.query(`
+            CREATE INDEX IF NOT EXISTS idx_${this.tableName}_document_id 
+            ON ${this.tableName} (document_id)
+          `);
+          await client.query(`
+            CREATE INDEX IF NOT EXISTS idx_${this.tableName}_created_at 
+            ON ${this.tableName} (created_at)
+          `);
+
+          // Create vector similarity search index (HNSW for better performance)
+          logger.info('Creating vector similarity index...');
+          try {
+            await client.query(`
+              CREATE INDEX IF NOT EXISTS ${this.tableName}_embedding_idx 
+              ON ${this.tableName} 
+              USING hnsw (embedding vector_cosine_ops)
+            `);
+            logger.info('HNSW index created');
+          } catch (indexError: any) {
+            // If HNSW is not available, fall back to ivfflat
+            if (indexError.message?.includes('hnsw') || indexError.message?.includes('operator class')) {
+              logger.warn('HNSW index not available, using ivfflat instead');
+              await client.query(`
+                CREATE INDEX IF NOT EXISTS ${this.tableName}_embedding_idx 
+                ON ${this.tableName} 
+                USING ivfflat (embedding vector_cosine_ops)
+                WITH (lists = 100)
+              `);
+            } else {
+              throw indexError;
+            }
           }
+
+          logger.info(`Table ${this.tableName} ready`);
+        } finally {
+          client.release();
         }
-      }, 'Collection initialization');
+      }, 'Database initialization');
 
       this.isInitialized = true;
       this.healthStatus = 'healthy';
@@ -229,33 +214,23 @@ export class VectorService {
       logger.info('Vector service initialized successfully');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      const errorString = String(error).toLowerCase();
-      
       logger.warn(`Failed to initialize vector database (non-critical): ${errorMessage}`);
       
       // Provide specific guidance based on error type
-      if (errorString.includes('unauthorized') || errorString.includes('401') || errorString.includes('authentication')) {
-        logger.warn('Authentication failed. Please verify your CHROMA_API_KEY is correct.');
-        if (config.chromaHost) {
-          logger.warn('For ChromaDB Cloud, ensure your API key is valid and has access to the specified tenant/database.');
-        }
-      } else if (errorString.includes('econnrefused') || errorString.includes('connection') || errorString.includes('network')) {
+      const errorString = String(error).toLowerCase();
+      if (errorString.includes('extension') || errorString.includes('vector')) {
+        logger.warn('pgvector extension may not be installed in your PostgreSQL database.');
+        logger.warn('To install pgvector:');
+        logger.warn('  1. For local PostgreSQL: Install pgvector extension');
+        logger.warn('  2. For cloud providers: Ensure pgvector is enabled in your database');
+        logger.warn('  3. For Neon/Supabase: pgvector is usually pre-installed');
+      } else if (errorString.includes('econnrefused') || errorString.includes('connection')) {
         logger.warn('Connection failed. Please verify:');
-        if (config.chromaHost) {
-          logger.warn(`  - ChromaDB Cloud host is reachable: ${config.chromaHost}`);
-          logger.warn('  - Your network allows HTTPS connections to ChromaDB Cloud');
-        } else {
-          logger.warn('  - ChromaDB server is running (for local: docker run -p 8000:8000 chromadb/chroma)');
-          logger.warn(`  - CHROMA_URL is correct: ${config.chromaUrl}`);
-        }
+        logger.warn(`  - DATABASE_URL is correct: ${config.databaseUrl?.replace(/:[^:@]+@/, ':****@')}`);
+        logger.warn('  - PostgreSQL server is running and accessible');
       }
       
       logger.warn('Server will continue without vector database features.');
-      logger.warn('To enable vector database features:');
-      logger.warn('  Local: Start ChromaDB server: docker run -p 8000:8000 chromadb/chroma');
-      logger.warn('         Then set CHROMA_URL=http://localhost:8000 in your .env file');
-      logger.warn('  Cloud: Set CHROMA_HOST, CHROMA_API_KEY, CHROMA_TENANT, and CHROMA_DATABASE in your .env file');
-      logger.warn('  If using ChromaDB in browser, set CHROMA_SERVER_CORS_ALLOW_ORIGINS environment variable');
       this.healthStatus = 'unhealthy';
       this.isInitialized = false;
       // Don't throw - allow server to continue without vector database
@@ -263,47 +238,12 @@ export class VectorService {
   }
 
   /**
-   * Get the Chroma collection with retry logic
-   * Falls back to getOrCreateCollection if collection doesn't exist
-   */
-  private async getCollection() {
-    if (!this.chromaClient) {
-      throw new Error('Chroma client not initialized. Please configure CHROMA_URL.');
-    }
-
-    if (!this.isInitialized) {
-      await this.initialize();
-    }
-
-    return await this.retryOperation(async () => {
-      try {
-        return await this.chromaClient!.getCollection({ name: this.collectionName });
-      } catch (error: any) {
-        // If collection doesn't exist, try to get or create it
-        const errorMessage = error?.message || String(error);
-        if (errorMessage.toLowerCase().includes('not found') || 
-            errorMessage.toLowerCase().includes('does not exist')) {
-          logger.warn(`Collection ${this.collectionName} not found, creating it...`);
-          return await this.chromaClient!.getOrCreateCollection({
-            name: this.collectionName,
-            metadata: {
-              description: 'Document chunks for autism-related documents',
-              created: new Date().toISOString(),
-            },
-          });
-        }
-        throw error;
-      }
-    }, 'Get collection');
-  }
-
-  /**
-   * Store document chunks as vectors in Chroma
+   * Store document chunks as vectors in PostgreSQL
    * @param chunks Document chunks to store
    */
   async storeDocumentChunks(chunks: DocumentChunk[]): Promise<void> {
-    if (!this.chromaClient) {
-      logger.warn('Chroma not configured. Skipping vector storage.');
+    if (!this.pool) {
+      logger.warn('PostgreSQL not configured. Skipping vector storage.');
       return;
     }
 
@@ -313,7 +253,9 @@ export class VectorService {
     }
 
     try {
-      const collection = await this.getCollection();
+      if (!this.isInitialized) {
+        await this.initialize();
+      }
 
       // Process chunks in batches to avoid memory issues
       const batches = [];
@@ -332,29 +274,51 @@ export class VectorService {
           const texts = batch.map((chunk) => chunk.text);
           const embeddingResults = await embeddingService.generateEmbeddings(texts);
 
-          // Prepare data for Chroma
-          const ids = batch.map((chunk) => chunk.id);
-          const embeddings = embeddingResults.map((result) => result.embedding);
-          const documents = batch.map((chunk) => chunk.text);
-          const metadatas = batch.map((chunk) => ({
-            documentId: chunk.metadata.documentId,
-            fileName: chunk.metadata.fileName,
-            chunkIndex: chunk.metadata.chunkIndex.toString(),
-            startChar: chunk.metadata.startChar.toString(),
-            endChar: chunk.metadata.endChar.toString(),
-            termCount: chunk.metadata.termCount?.toString() || '0',
-            terms: chunk.metadata.terms?.join(',') || '',
-          }));
+          const client = await this.pool!.connect();
+          try {
+            // Use a transaction for batch insert
+            await client.query('BEGIN');
 
-          // Add vectors to collection
-          await collection.add({
-            ids,
-            embeddings,
-            documents,
-            metadatas,
-          });
+            // Prepare insert statements
+            for (let i = 0; i < batch.length; i++) {
+              const chunk = batch[i];
+              const embedding = embeddingResults[i].embedding;
+              
+              // Convert embedding array to PostgreSQL vector format
+              const vectorString = `[${embedding.join(',')}]`;
 
-          logger.debug(`Stored batch ${batchIndex + 1}/${batches.length}`);
+              await client.query(
+                `INSERT INTO ${this.tableName} (id, document_id, text, embedding, metadata)
+                 VALUES ($1, $2, $3, $4::vector, $5::jsonb)
+                 ON CONFLICT (id) DO UPDATE SET
+                   text = EXCLUDED.text,
+                   embedding = EXCLUDED.embedding,
+                   metadata = EXCLUDED.metadata`,
+                [
+                  chunk.id,
+                  chunk.metadata.documentId,
+                  chunk.text,
+                  vectorString,
+                  JSON.stringify({
+                    fileName: chunk.metadata.fileName,
+                    chunkIndex: chunk.metadata.chunkIndex,
+                    startChar: chunk.metadata.startChar,
+                    endChar: chunk.metadata.endChar,
+                    termCount: chunk.metadata.termCount || 0,
+                    terms: chunk.metadata.terms || [],
+                  }),
+                ]
+              );
+            }
+
+            await client.query('COMMIT');
+            logger.debug(`Stored batch ${batchIndex + 1}/${batches.length}`);
+          } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+          } finally {
+            client.release();
+          }
         }, `Store batch ${batchIndex + 1}`);
       }
 
@@ -382,8 +346,8 @@ export class VectorService {
     filter?: Record<string, any>,
     minScore: number = 0.0
   ): Promise<SearchResult[]> {
-    if (!this.chromaClient) {
-      logger.warn('Chroma not configured. Returning empty search results.');
+    if (!this.pool) {
+      logger.warn('PostgreSQL not configured. Returning empty search results.');
       return [];
     }
 
@@ -392,67 +356,86 @@ export class VectorService {
     }
 
     try {
-      const collection = await this.getCollection();
+      if (!this.isInitialized) {
+        await this.initialize();
+      }
 
       // Generate embedding for the query
       logger.debug('Generating query embedding');
       const queryEmbedding = await embeddingService.generateEmbedding(query);
 
-      // Build query request
-      const queryRequest: any = {
-        queryEmbeddings: [queryEmbedding.embedding],
-        nResults: topK,
-        include: ['documents', 'metadatas', 'distances'],
-      };
+      const client = await this.pool.connect();
+      try {
+        // Build the query with vector similarity search
+        let sqlQuery = `
+          SELECT 
+            id,
+            document_id,
+            text,
+            metadata,
+            1 - (embedding <=> $1::vector) as similarity
+          FROM ${this.tableName}
+          WHERE embedding IS NOT NULL
+        `;
 
-      if (filter) {
-        queryRequest.where = filter;
-      }
+        const queryParams: any[] = [`[${queryEmbedding.embedding.join(',')}]`];
+        let paramIndex = 2;
 
-      // Search Chroma with retry
-      const searchResponse = await this.retryOperation(
-        () => collection.query(queryRequest),
-        'Vector search'
-      );
-
-      // Transform results
-      const results: SearchResult[] = [];
-      const documents = searchResponse.documents?.[0] || [];
-      const metadatas = searchResponse.metadatas?.[0] || [];
-      const distances = searchResponse.distances?.[0] || [];
-      const ids = searchResponse.ids?.[0] || [];
-
-      for (let i = 0; i < documents.length; i++) {
-        const metadata = metadatas[i] || {};
-        const distance = distances[i] || 0;
-        // Convert distance to similarity score (1 - distance for cosine similarity)
-        const score = 1 - distance;
-
-        // Filter by minimum score
-        if (score < minScore) {
-          continue;
+        // Add metadata filters if provided
+        if (filter) {
+          Object.entries(filter).forEach(([key, value]) => {
+            sqlQuery += ` AND metadata->>$${paramIndex} = $${paramIndex + 1}`;
+            queryParams.push(key, value);
+            paramIndex += 2;
+          });
         }
 
-        results.push({
-          id: ids[i] || '',
-          score,
-          text: documents[i] || '',
-          metadata: {
-            documentId: metadata.documentId as string || '',
-            fileName: metadata.fileName as string || '',
-            chunkIndex: parseInt(metadata.chunkIndex as string || '0', 10),
-            startChar: parseInt(metadata.startChar as string || '0', 10),
-            endChar: parseInt(metadata.endChar as string || '0', 10),
-            termCount: metadata.termCount ? parseInt(metadata.termCount as string, 10) : undefined,
-            terms: metadata.terms ? (metadata.terms as string).split(',').filter((t) => t.length > 0) : undefined,
-          },
-        });
-      }
+        // Order by similarity and limit results
+        sqlQuery += ` ORDER BY embedding <=> $1::vector LIMIT $${paramIndex}`;
+        queryParams.push(topK);
 
-      logger.debug(`Found ${results.length} similar chunks for query (minScore: ${minScore})`);
-      this.healthStatus = 'healthy';
-      this.lastHealthCheck = new Date();
-      return results;
+        const result = await this.retryOperation(
+          () => client.query(sqlQuery, queryParams),
+          'Vector search'
+        );
+
+        // Transform results
+        const results: SearchResult[] = [];
+        for (const row of result.rows) {
+          const score = parseFloat(row.similarity);
+          
+          // Filter by minimum score
+          if (score < minScore) {
+            continue;
+          }
+
+          const metadata = typeof row.metadata === 'string' 
+            ? JSON.parse(row.metadata) 
+            : row.metadata;
+
+          results.push({
+            id: row.id,
+            score,
+            text: row.text,
+            metadata: {
+              documentId: row.document_id,
+              fileName: metadata.fileName || '',
+              chunkIndex: metadata.chunkIndex || 0,
+              startChar: metadata.startChar || 0,
+              endChar: metadata.endChar || 0,
+              termCount: metadata.termCount,
+              terms: metadata.terms || [],
+            },
+          });
+        }
+
+        logger.debug(`Found ${results.length} similar chunks for query (minScore: ${minScore})`);
+        this.healthStatus = 'healthy';
+        this.lastHealthCheck = new Date();
+        return results;
+      } finally {
+        client.release();
+      }
     } catch (error) {
       logger.error('Error searching similar chunks:', error);
       this.healthStatus = 'unhealthy';
@@ -466,26 +449,27 @@ export class VectorService {
    * @param documentId Document ID to delete
    */
   async deleteDocumentVectors(documentId: string): Promise<void> {
-    if (!this.chromaClient) {
-      logger.warn('Chroma not configured. Skipping vector deletion.');
+    if (!this.pool) {
+      logger.warn('PostgreSQL not configured. Skipping vector deletion.');
       return;
     }
 
     try {
-      const collection = await this.getCollection();
+      const client = await this.pool.connect();
+      try {
+        await this.retryOperation(async () => {
+          await client.query(
+            `DELETE FROM ${this.tableName} WHERE document_id = $1`,
+            [documentId]
+          );
+        }, `Delete vectors for document ${documentId}`);
 
-      await this.retryOperation(async () => {
-        // Delete by metadata filter
-        await collection.delete({
-          where: {
-            documentId: { $eq: documentId },
-          },
-        });
-      }, `Delete vectors for document ${documentId}`);
-
-      logger.info(`Deleted vectors for document: ${documentId}`);
-      this.healthStatus = 'healthy';
-      this.lastHealthCheck = new Date();
+        logger.info(`Deleted vectors for document: ${documentId}`);
+        this.healthStatus = 'healthy';
+        this.lastHealthCheck = new Date();
+      } finally {
+        client.release();
+      }
     } catch (error) {
       logger.error(`Error deleting vectors for document ${documentId}:`, error);
       this.healthStatus = 'unhealthy';
@@ -497,7 +481,7 @@ export class VectorService {
    * Check if vector service is available
    */
   isAvailable(): boolean {
-    return this.chromaClient !== undefined && this.isInitialized;
+    return this.pool !== undefined && this.isInitialized;
   }
 
   /**
@@ -511,29 +495,41 @@ export class VectorService {
     collectionExists: boolean;
     error?: string;
   }> {
-    if (!this.chromaClient) {
+    if (!this.pool) {
       return {
         status: 'unhealthy',
         initialized: false,
         lastCheck: null,
         collectionExists: false,
-        error: 'Chroma client not initialized',
+        error: 'PostgreSQL pool not initialized',
       };
     }
 
     try {
-      const collections = await this.chromaClient.listCollections();
-      const collectionExists = collections.some((col) => col.name === this.collectionName);
+      const client = await this.pool.connect();
+      try {
+        // Check if table exists
+        const tableCheck = await client.query(`
+          SELECT EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_name = $1
+          )
+        `, [this.tableName]);
 
-      this.healthStatus = 'healthy';
-      this.lastHealthCheck = new Date();
+        const tableExists = tableCheck.rows[0].exists;
 
-      return {
-        status: 'healthy',
-        initialized: this.isInitialized,
-        lastCheck: this.lastHealthCheck,
-        collectionExists,
-      };
+        this.healthStatus = 'healthy';
+        this.lastHealthCheck = new Date();
+
+        return {
+          status: 'healthy',
+          initialized: this.isInitialized,
+          lastCheck: this.lastHealthCheck,
+          collectionExists: tableExists,
+        };
+      } finally {
+        client.release();
+      }
     } catch (error) {
       this.healthStatus = 'unhealthy';
       return {
@@ -554,24 +550,29 @@ export class VectorService {
     count?: number;
     error?: string;
   }> {
-    if (!this.chromaClient) {
+    if (!this.pool) {
       return {
-        collectionName: this.collectionName,
-        error: 'Chroma client not initialized',
+        collectionName: this.tableName,
+        error: 'PostgreSQL pool not initialized',
       };
     }
 
     try {
-      const collection = await this.getCollection();
-      const count = await collection.count();
+      const client = await this.pool.connect();
+      try {
+        const result = await client.query(`SELECT COUNT(*) as count FROM ${this.tableName}`);
+        const count = parseInt(result.rows[0].count, 10);
 
-      return {
-        collectionName: this.collectionName,
-        count,
-      };
+        return {
+          collectionName: this.tableName,
+          count,
+        };
+      } finally {
+        client.release();
+      }
     } catch (error) {
       return {
-        collectionName: this.collectionName,
+        collectionName: this.tableName,
         error: error instanceof Error ? error.message : 'Unknown error',
       };
     }

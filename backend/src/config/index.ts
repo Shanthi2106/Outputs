@@ -16,13 +16,8 @@ interface Config {
   databaseUrl: string;
   redisUrl?: string;
 
-  // Vector Database Configuration (ChromaDB - for document chunks)
-  chromaUrl?: string;
-  chromaHost?: string;
-  chromaApiKey?: string;
-  chromaTenant?: string;
-  chromaDatabase?: string;
-  chromaCollectionName?: string;
+  // Vector Database Configuration (PostgreSQL with pgvector - for document chunks)
+  // Uses the same DATABASE_URL as the main database
 
   // Vector Database Configuration (Pinecone - for term storage)
   pineconeApiKey?: string;
@@ -59,16 +54,9 @@ const config: Config = {
   databaseUrl: process.env.DATABASE_URL || 'postgresql://localhost:5432/autism_assistant',
   redisUrl: process.env.REDIS_URL,
 
-  // Vector Database (ChromaDB - for document chunks)
-  // Set to empty string or omit to disable ChromaDB (embeddings will still work via EmbeddingService)
-  // For local: use CHROMA_URL (e.g., http://localhost:8000)
-  // For cloud: use CHROMA_HOST, CHROMA_API_KEY, CHROMA_TENANT, CHROMA_DATABASE
-  chromaUrl: process.env.CHROMA_URL || '',
-  chromaHost: process.env.CHROMA_HOST,
-  chromaApiKey: process.env.CHROMA_API_KEY,
-  chromaTenant: process.env.CHROMA_TENANT,
-  chromaDatabase: process.env.CHROMA_DATABASE,
-  chromaCollectionName: process.env.CHROMA_COLLECTION_NAME || 'autism-documents',
+  // Vector Database (PostgreSQL with pgvector - for document chunks)
+  // Uses the same DATABASE_URL as the main database
+  // Ensure pgvector extension is installed in your PostgreSQL database
 
   // Vector Database (Pinecone - for term storage)
   pineconeApiKey: process.env.PINECONE_API_KEY,
@@ -194,18 +182,11 @@ function validateConfig(): void {
   }
 
   // Validate vector database configuration (warnings, not errors - RAG is optional)
-  const hasLocalChroma = config.chromaUrl && config.chromaUrl.trim() !== '';
-  const hasCloudChroma = config.chromaHost && config.chromaApiKey;
-  
-  if (!hasLocalChroma && !hasCloudChroma) {
-    console.warn('⚠️  ChromaDB not configured. Document RAG features will be disabled.');
+  if (!config.databaseUrl || config.databaseUrl === 'postgresql://localhost:5432/autism_assistant') {
+    console.warn('⚠️  DATABASE_URL not configured or using default. Document RAG features will be disabled.');
     console.warn('   (This is optional - server will work without it)');
-    console.warn('   To enable local ChromaDB: Set CHROMA_URL in your .env file (e.g., CHROMA_URL=http://localhost:8000)');
-    console.warn('   To enable ChromaDB Cloud: Set CHROMA_HOST, CHROMA_API_KEY, CHROMA_TENANT, and CHROMA_DATABASE');
-  } else if (hasCloudChroma && !config.chromaTenant) {
-    console.warn('⚠️  CHROMA_TENANT not set. Using default tenant.');
-  } else if (hasCloudChroma && !config.chromaDatabase) {
-    console.warn('⚠️  CHROMA_DATABASE not set. Using default database.');
+    console.warn('   To enable PostgreSQL vector storage: Set DATABASE_URL in your .env file');
+    console.warn('   Ensure your PostgreSQL database has the pgvector extension installed');
   }
 
   if (!config.pineconeApiKey || config.pineconeApiKey === 'your_pinecone_api_key_here') {
