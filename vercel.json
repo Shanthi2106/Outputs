@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "F=$(find . -maxdepth 2 -name vercel.json | head -1) && cd $(dirname $F 2>/dev/null || echo .) && (cd backend && npm install && npm run build) && (cd frontend && npm install && npm run build)",
+  "buildCommand": "test -d backend && (cd backend && npm install && npm run build) || (echo 'ERROR: backend dir missing' && exit 1); test -d frontend && (cd frontend && npm install && npm run build) || exit 1",
   "outputDirectory": "frontend/dist",
   "installCommand": "echo 'Dependencies installed during build'",
   "framework": null,
