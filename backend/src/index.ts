@@ -32,10 +32,33 @@ const app: Application = express();
 // Middleware
 logger.info('Step 4: Configuring middleware...');
 app.use(helmet());
-app.use(cors({
-  origin: config.corsOrigin,
+// CORS configuration - allow Vercel origins in production
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // In production (Vercel), allow any Vercel domain
+    const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV;
+    if (isVercel) {
+      // Allow any Vercel domain (*.vercel.app) or the configured CORS origin
+      const isVercelDomain = origin.includes('.vercel.app');
+      const isConfiguredOrigin = origin === config.corsOrigin;
+      if (isVercelDomain || isConfiguredOrigin) {
+        return callback(null, true);
+      }
+    }
+    
+    // In development or if origin matches configured CORS origin
+    if (origin === config.corsOrigin) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
-}));
+};
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 logger.info('Step 4: Middleware configured');

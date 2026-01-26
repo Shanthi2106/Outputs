@@ -8,16 +8,21 @@ interface MessageInputProps {
 export default function MessageInput({ onSend, disabled = false }: MessageInputProps) {
   const [input, setInput] = useState('');
 
-  const handleSend = () => {
+  const handleSend = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (input.trim() && !disabled) {
       onSend(input.trim());
       setInput('');
     }
   };
 
-  const handleKeyPress = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
+      e.stopPropagation();
       handleSend();
     }
   };
@@ -28,7 +33,7 @@ export default function MessageInput({ onSend, disabled = false }: MessageInputP
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyDown}
           placeholder="Type your question or paste a document excerpt here..."
           disabled={disabled}
           className="input-field resize-none"
@@ -42,6 +47,7 @@ export default function MessageInput({ onSend, disabled = false }: MessageInputP
           </p>
 
           <button
+            type="button"
             onClick={handleSend}
             disabled={disabled || !input.trim()}
             className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"

@@ -92,4 +92,32 @@ if (loadedPath) {
 
 // Export the Express app for Vercel
 // Vercel will automatically handle routing when using rewrites
-module.exports = app;
+// Wrap in a handler function to ensure proper request handling
+const handler = (req, res) => {
+  // Log the incoming request for debugging
+  console.log(`[Vercel Function] Incoming request: ${req.method} ${req.url}`);
+  console.log(`[Vercel Function] Original URL: ${req.originalUrl || req.url}`);
+  console.log(`[Vercel Function] Path: ${req.path || req.url}`);
+  
+  // When using rewrites, Vercel might strip the /api prefix
+  // We need to ensure the path includes /api for Express routing
+  const originalUrl = req.originalUrl || req.url;
+  if (!originalUrl.startsWith('/api')) {
+    // If the path doesn't start with /api, add it back
+    req.url = '/api' + originalUrl;
+    req.originalUrl = '/api' + originalUrl;
+  } else {
+    // Ensure req.originalUrl is set
+    if (!req.originalUrl) {
+      req.originalUrl = req.url;
+    }
+  }
+  
+  console.log(`[Vercel Function] Adjusted URL: ${req.url}`);
+  console.log(`[Vercel Function] Adjusted originalUrl: ${req.originalUrl}`);
+  
+  // Ensure the Express app handles the request
+  return app(req, res);
+};
+
+module.exports = handler;
