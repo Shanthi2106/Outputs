@@ -57,7 +57,7 @@ function App() {
     checkBackend();
 
     // Retry logic with exponential backoff (max 5 retries)
-    let retryTimeout: NodeJS.Timeout;
+    let retryTimeout: ReturnType<typeof setTimeout>;
     if (retryCount > 0 && retryCount <= 5 && backendStatus === 'disconnected') {
       const delay = Math.min(1000 * Math.pow(2, retryCount - 1), 30000); // 1s, 2s, 4s, 8s, 16s, max 30s
       retryTimeout = setTimeout(() => {
