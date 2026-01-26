@@ -1,8 +1,9 @@
 {
   "version": 2,
-  "buildCommand": "(cd backend && npm run build) && (cd frontend && npm run build)",
+  "rootDirectory": ".",
+  "buildCommand": "(cd backend && npm install && npm run build) && (cd frontend && npm install && npm run build)",
   "outputDirectory": "frontend/dist",
-  "installCommand": "npm install --prefix backend && npm install --prefix frontend",
+  "installCommand": "echo 'Dependencies installed during build'",
   "framework": null,
   "rewrites": [
     {
