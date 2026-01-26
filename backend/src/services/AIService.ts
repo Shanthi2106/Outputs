@@ -169,6 +169,7 @@ export class AIService {
       content: msg.content,
     }));
 
+    // @ts-ignore - Anthropic SDK types may not be fully compatible
     const response = await this.anthropicClient.messages.create({
       model: config.aiModel || 'claude-3-sonnet-20240229',
       max_tokens: 1000,

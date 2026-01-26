@@ -1,4 +1,5 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
+import { Server } from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
 import config from './config';
@@ -133,7 +134,7 @@ logger.info('Step 6: Vector service initialization started (non-blocking)');
 // Start server with error handling
 // Skip server startup in Vercel (serverless) environment
 const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV;
-let server;
+let server: Server | undefined;
 if (!isVercel) {
   logger.info('Step 7: Starting HTTP server...');
   try {

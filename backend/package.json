@@ -24,7 +24,7 @@
   "author": "Sai Prashanthi Vemula",
   "license": "UNLICENSED",
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.12.0",
+    "@anthropic-ai/sdk": "^0.71.2",
     "@pinecone-database/pinecone": "^6.1.4",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -48,6 +48,7 @@
     "@types/node": "^20.10.6",
     "@types/pg": "^8.10.9",
     "@types/uuid": "^9.0.7",
+    "@types/pdf-parse": "^1.1.4",
     "@typescript-eslint/eslint-plugin": "^6.17.0",
     "@typescript-eslint/parser": "^6.17.0",
     "eslint": "^8.56.0",

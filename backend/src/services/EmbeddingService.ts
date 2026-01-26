@@ -25,7 +25,7 @@ const MAX_CACHE_SIZE = 1000; // Maximum number of cached embeddings
 export class EmbeddingService {
   private openaiClient?: OpenAI;
   private cache: Map<string, CacheEntry> = new Map();
-  private defaultModel: string;
+  private defaultModel: string = 'text-embedding-3-small';
 
   // Expected dimensions for different models
   private readonly MODEL_DIMENSIONS: Record<string, number> = {
