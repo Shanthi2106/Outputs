@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "bash build-vercel.sh",
+  "buildCommand": "PROJECT_ROOT=$(find . -name 'vercel.json' -type f | head -1 | xargs dirname) && cd \"$PROJECT_ROOT\" && (cd backend && npm install && npm run build) && (cd frontend && npm install && npm run build)",
   "outputDirectory": "frontend/dist",
   "installCommand": "echo 'Dependencies installed during build'",
   "framework": null,
