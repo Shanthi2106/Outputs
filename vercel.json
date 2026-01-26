@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "PROJECT_ROOT=$(find . -name 'vercel.json' -type f | head -1 | xargs dirname) && cd \"$PROJECT_ROOT\" && (cd backend && npm install && npm run build) && (cd frontend && npm install && npm run build)",
+  "buildCommand": "VERCEL_FILE=$(find . -maxdepth 3 -name 'vercel.json' -type f 2>/dev/null | head -1); if [ -n \"$VERCEL_FILE\" ]; then cd \"$(dirname \"$VERCEL_FILE\")\"; fi && (cd backend && npm install && npm run build) && (cd frontend && npm install && npm run build)",
   "outputDirectory": "frontend/dist",
   "installCommand": "echo 'Dependencies installed during build'",
   "framework": null,
