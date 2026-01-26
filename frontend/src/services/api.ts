@@ -4,17 +4,27 @@ import axios, { AxiosInstance } from 'axios';
 // - In production (Vercel): use relative path to API
 // - In development: use localhost
 const getApiBaseUrl = () => {
-  const isProduction = import.meta.env.PROD || import.meta.env.MODE === 'production';
+  // Detect production environment - check multiple indicators
+  const isProduction = 
+    import.meta.env.PROD || 
+    import.meta.env.MODE === 'production' ||
+    import.meta.env.VITE_VERCEL === '1' ||
+    window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+  
   const envApiUrl = import.meta.env.VITE_API_URL;
   
-  // If VITE_API_URL is set and not localhost (or we're in dev), use it
+  // If VITE_API_URL is set, validate it
   if (envApiUrl) {
-    // In production, ignore localhost URLs from .env files
-    if (isProduction && (envApiUrl.includes('localhost') || envApiUrl.includes('127.0.0.1'))) {
-      // Use relative path instead for production
+    // Always ignore localhost URLs in production (even if set in env)
+    const isLocalhost = envApiUrl.includes('localhost') || envApiUrl.includes('127.0.0.1');
+    
+    if (isProduction && isLocalhost) {
+      // Force relative path in production, ignore localhost from .env
+      console.warn('Ignoring localhost API URL in production, using relative path');
       return '/api/v1';
     }
-    // Otherwise use the provided URL
+    
+    // Use the provided URL if it's valid for the current environment
     return envApiUrl;
   }
   
