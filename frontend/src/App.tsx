@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Header from './components/Common/Header';
 import Footer from './components/Common/Footer';
 import Disclaimer from './components/Common/Disclaimer';
@@ -20,7 +20,7 @@ function App() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Check backend connection with retry logic
-  const checkBackend = async (isRetry: boolean = false) => {
+  const checkBackend = useCallback(async (isRetry: boolean = false) => {
     if (!isRetry) {
       setBackendStatus('checking');
     }
@@ -46,37 +46,50 @@ function App() {
       }
       
       // Increment retry count for automatic retries
-      if (!isRetry) {
-        setRetryCount(prev => prev + 1);
-      }
+      // This will trigger the retry effect to schedule the next retry
+      setRetryCount(prev => {
+        // Only increment if we haven't exceeded max retries
+        if (prev < 5) {
+          return prev + 1;
+        }
+        return prev; // Don't increment beyond max
+      });
     }
-  };
+  }, []); // Empty deps - state setters are stable
 
-  // Initial check and automatic retry with exponential backoff
+  // Initial check on mount
   useEffect(() => {
     checkBackend();
+  }, [checkBackend]); // Run once on mount and when checkBackend changes
 
-    // Retry logic with exponential backoff (max 5 retries)
-    let retryTimeout: ReturnType<typeof setTimeout>;
+  // Retry logic with exponential backoff (max 5 retries)
+  useEffect(() => {
     if (retryCount > 0 && retryCount <= 5 && backendStatus === 'disconnected') {
       const delay = Math.min(1000 * Math.pow(2, retryCount - 1), 30000); // 1s, 2s, 4s, 8s, 16s, max 30s
-      retryTimeout = setTimeout(() => {
+      const retryTimeout = setTimeout(() => {
         checkBackend(true);
       }, delay);
+
+      return () => {
+        clearTimeout(retryTimeout);
+      };
+    }
+  }, [retryCount, backendStatus, checkBackend]); // Only retry when retryCount or status changes
+
+  // Periodic health check every 30 seconds when connected
+  useEffect(() => {
+    if (backendStatus !== 'connected') {
+      return; // Don't set up interval if not connected
     }
 
-    // Periodic health check every 30 seconds when connected
     const interval = setInterval(() => {
-      if (backendStatus === 'connected') {
-        checkBackend(true);
-      }
+      checkBackend(true);
     }, 30000);
 
     return () => {
       clearInterval(interval);
-      if (retryTimeout) clearTimeout(retryTimeout);
     };
-  }, [retryCount, backendStatus]);
+  }, [backendStatus, checkBackend]); // Recreate interval when status changes
 
   const handleLoadConversation = (conversation: SavedConversation) => {
     setLoadedConversation(conversation);
