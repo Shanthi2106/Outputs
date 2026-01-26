@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "pwd && ls -la && if [ -d backend ]; then (cd backend && npm install && npm run build); else echo 'Backend missing, checking parent...' && cd .. && pwd && ls -la && if [ -d backend ]; then (cd backend && npm install && npm run build); else exit 1; fi; fi && if [ -d frontend ]; then (cd frontend && npm install && npm run build); else cd .. && (cd frontend && npm install && npm run build); fi",
+  "buildCommand": "[ -d backend ] && (cd backend && npm install && npm run build) || exit 1; [ -d frontend ] && (cd frontend && npm install && npm run build) || exit 1",
   "outputDirectory": "frontend/dist",
   "installCommand": "echo 'Dependencies installed during build'",
   "framework": null,
