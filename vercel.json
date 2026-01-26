@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "pwd && echo 'Contents:' && ls -la && VERCEL_FILE=$(find . -maxdepth 3 -name 'vercel.json' -type f 2>/dev/null | head -1); if [ -n \"$VERCEL_FILE\" ]; then cd \"$(dirname \"$VERCEL_FILE\")\" && echo 'After cd, pwd:' && pwd && echo 'Contents after cd:' && ls -la; fi && if [ -d backend ]; then (cd backend && npm install && npm run build); else echo 'ERROR: backend directory not found!' && exit 1; fi && if [ -d frontend ]; then (cd frontend && npm install && npm run build); else echo 'ERROR: frontend directory not found!' && exit 1; fi",
+  "buildCommand": "F=$(find . -maxdepth 2 -name vercel.json | head -1) && cd $(dirname $F 2>/dev/null || echo .) && (cd backend && npm install && npm run build) && (cd frontend && npm install && npm run build)",
   "outputDirectory": "frontend/dist",
   "installCommand": "echo 'Dependencies installed during build'",
   "framework": null,
