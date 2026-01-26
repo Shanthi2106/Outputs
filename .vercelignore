@@ -17,6 +17,7 @@ backend/requirements-minimal.txt
 *.md
 docs/
 *.log
+pnpm-lock.yaml
 
 # Ignore test files
 test-*.ts
