@@ -3,5 +3,5 @@
 
 const app = require('../backend/dist/index.js');
 
-// Export the default export from the compiled backend
-module.exports = app.default || app;
+// Export the Express app for Vercel
+module.exports = app;

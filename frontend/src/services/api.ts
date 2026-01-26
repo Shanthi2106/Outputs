@@ -1,11 +1,37 @@
 import axios, { AxiosInstance } from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3004/api/v1';
+// Use environment variable if set, otherwise:
+// - In production (Vercel): use relative path to API
+// - In development: use localhost
+const getApiBaseUrl = () => {
+  const isProduction = import.meta.env.PROD || import.meta.env.MODE === 'production';
+  const envApiUrl = import.meta.env.VITE_API_URL;
+  
+  // If VITE_API_URL is set and not localhost (or we're in dev), use it
+  if (envApiUrl) {
+    // In production, ignore localhost URLs from .env files
+    if (isProduction && (envApiUrl.includes('localhost') || envApiUrl.includes('127.0.0.1'))) {
+      // Use relative path instead for production
+      return '/api/v1';
+    }
+    // Otherwise use the provided URL
+    return envApiUrl;
+  }
+  
+  // In production (Vercel), use relative path
+  if (isProduction) {
+    return '/api/v1';
+  }
+  
+  // In development, use localhost
+  return 'http://localhost:3004/api/v1';
+};
 
-// Log API URL for debugging (only in development)
-if (import.meta.env.DEV) {
-  console.log('API Base URL:', API_BASE_URL);
-}
+const API_BASE_URL = getApiBaseUrl();
+
+// Log API URL for debugging
+console.log('API Base URL:', API_BASE_URL);
+console.log('Environment:', import.meta.env.MODE, 'PROD:', import.meta.env.PROD, 'DEV:', import.meta.env.DEV);
 
 class ApiService {
   private client: AxiosInstance;
