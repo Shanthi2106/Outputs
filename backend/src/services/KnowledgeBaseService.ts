@@ -26,8 +26,39 @@ export class KnowledgeBaseService {
    */
   private loadTerms(): void {
     try {
-      const knowledgeBasePath = join(__dirname, '../../../knowledge-base/terms-starter.json');
-      const data = readFileSync(knowledgeBasePath, 'utf-8');
+      // Try multiple path resolutions for different environments (local vs Vercel)
+      const possiblePaths = [
+        // If knowledge-base was copied to dist during build
+        join(__dirname, '../knowledge-base/terms-starter.json'),
+        // Local development: from backend/dist/services/ -> ../../../knowledge-base/
+        join(__dirname, '../../../knowledge-base/terms-starter.json'),
+        // Vercel/serverless: from backend/dist/ -> ../knowledge-base/
+        join(__dirname, '../../knowledge-base/terms-starter.json'),
+        // Alternative: from project root
+        join(process.cwd(), 'knowledge-base/terms-starter.json'),
+        // Fallback: relative to current working directory
+        './knowledge-base/terms-starter.json',
+      ];
+
+      let knowledgeBasePath: string | null = null;
+      let data: string | null = null;
+
+      for (const path of possiblePaths) {
+        try {
+          data = readFileSync(path, 'utf-8');
+          knowledgeBasePath = path;
+          logger.info(`Successfully loaded knowledge base from: ${path}`);
+          break;
+        } catch (err) {
+          // Try next path
+          continue;
+        }
+      }
+
+      if (!data || !knowledgeBasePath) {
+        throw new Error(`Could not find knowledge base file. Tried paths: ${possiblePaths.join(', ')}`);
+      }
+
       this.terms = JSON.parse(data);
 
       // Build a map for quick lookups (case-insensitive)
@@ -40,7 +71,9 @@ export class KnowledgeBaseService {
       logger.info(`Loaded ${this.terms.length} terms from knowledge base`);
     } catch (error) {
       logger.error('Failed to load knowledge base:', error);
-      throw new Error('Failed to load knowledge base');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error(`Error details: ${errorMessage}`);
+      throw new Error(`Failed to load knowledge base: ${errorMessage}`);
     }
   }
 

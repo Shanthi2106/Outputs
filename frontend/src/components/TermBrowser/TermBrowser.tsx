@@ -21,14 +21,38 @@ export default function TermBrowser() {
         setLoading(true);
         setError(null);
         const response = await apiService.getAllTerms();
-        if (response.success && response.terms) {
+        console.log('Terms API response:', response);
+        
+        if (response && response.success && Array.isArray(response.terms)) {
           setAllTerms(response.terms);
         } else {
-          setError('Failed to load terms from server');
+          console.warn('Invalid response format:', response);
+          setError('Failed to load terms from server. Invalid response format.');
         }
       } catch (err: any) {
         console.error('Error fetching terms:', err);
-        setError(err.message || 'Failed to load terms. Please check your connection and try again.');
+        
+        // Extract error message from various error formats
+        let errorMessage = 'Failed to load terms. Please check your connection and try again.';
+        
+        if (err) {
+          if (typeof err === 'string') {
+            errorMessage = err;
+          } else if (err.message) {
+            errorMessage = err.message;
+          } else if (err.response?.data?.message) {
+            errorMessage = err.response.data.message;
+          } else if (err.response?.data?.error) {
+            errorMessage = err.response.data.error;
+          } else if (typeof err.toString === 'function') {
+            const errStr = err.toString();
+            if (errStr !== '[object Object]') {
+              errorMessage = errStr;
+            }
+          }
+        }
+        
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -218,12 +242,15 @@ export default function TermBrowser() {
 
   // Show error state
   if (error) {
+    // Ensure error is always a string for display
+    const errorMessage = typeof error === 'string' ? error : String(error);
+    
     return (
       <div className="max-w-6xl mx-auto p-6">
         <div className="card bg-red-50 border-red-200">
           <div className="mb-4">
             <h3 className="text-lg font-semibold text-red-800 mb-2">Error Loading Terms</h3>
-            <p className="text-red-600">{error}</p>
+            <p className="text-red-600">{errorMessage}</p>
           </div>
           <button
             onClick={() => window.location.reload()}
