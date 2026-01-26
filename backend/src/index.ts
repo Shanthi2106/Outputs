@@ -229,4 +229,6 @@ if (!isVercel) {
   logger.info('Running in Vercel serverless environment - server will be managed by Vercel');
 }
 
+// Export for both CommonJS and ES modules
 export default app;
+module.exports = app;
