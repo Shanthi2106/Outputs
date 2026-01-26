@@ -1,8 +1,22 @@
 {
-    "functions": {
-      "api/**/*.py": {
-        "runtime": "python3.12"
-      }
+  "version": 2,
+  "buildCommand": "cd backend && npm install && npm run build && cd ../frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist",
+  "installCommand": "echo 'Using buildCommand for installation'",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "functions": {
+    "api/index.js": {
+      "runtime": "nodejs20.x"
     }
   }
-  
+}

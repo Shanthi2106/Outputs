@@ -131,10 +131,13 @@ process.on('uncaughtException', (error) => {
 logger.info('Step 6: Vector service initialization started (non-blocking)');
 
 // Start server with error handling
-logger.info('Step 7: Starting HTTP server...');
+// Skip server startup in Vercel (serverless) environment
+const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV;
 let server;
-try {
-  server = app.listen(config.port, () => {
+if (!isVercel) {
+  logger.info('Step 7: Starting HTTP server...');
+  try {
+    server = app.listen(config.port, () => {
     console.log('');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('  ✓ Server Started Successfully!');
@@ -183,40 +186,47 @@ try {
       process.exit(1);
     }
   });
-} catch (error) {
-  console.log('');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('  ✗ Server Startup Failed!');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('');
-  logger.error('Failed to start server:', error);
-  if (error instanceof Error) {
-    console.error('Error:', error.message);
-    logger.error('Error message:', error.message);
-    logger.error('Stack trace:', error.stack);
+  } catch (error) {
+    console.log('');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('  ✗ Server Startup Failed!');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('');
+    logger.error('Failed to start server:', error);
+    if (error instanceof Error) {
+      console.error('Error:', error.message);
+      logger.error('Error message:', error.message);
+      logger.error('Stack trace:', error.stack);
+    }
+    console.log('');
+    console.log('Check the error messages above for details.');
+    console.log('Run diagnose-backend.bat or test-backend-startup.bat for help.');
+    console.log('');
+    process.exit(1);
   }
-  console.log('');
-  console.log('Check the error messages above for details.');
-  console.log('Run diagnose-backend.bat or test-backend-startup.bat for help.');
-  console.log('');
-  process.exit(1);
+
+  // Graceful shutdown (only for local server)
+  process.on('SIGTERM', () => {
+    logger.info('SIGTERM signal received: closing HTTP server');
+    if (server) {
+      server.close(() => {
+        logger.info('HTTP server closed');
+        process.exit(0);
+      });
+    }
+  });
+
+  process.on('SIGINT', () => {
+    logger.info('SIGINT signal received: closing HTTP server');
+    if (server) {
+      server.close(() => {
+        logger.info('HTTP server closed');
+        process.exit(0);
+      });
+    }
+  });
+} else {
+  logger.info('Running in Vercel serverless environment - server will be managed by Vercel');
 }
-
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM signal received: closing HTTP server');
-  server.close(() => {
-    logger.info('HTTP server closed');
-    process.exit(0);
-  });
-});
-
-process.on('SIGINT', () => {
-  logger.info('SIGINT signal received: closing HTTP server');
-  server.close(() => {
-    logger.info('HTTP server closed');
-    process.exit(0);
-  });
-});
 
 export default app;

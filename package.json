@@ -27,8 +27,4 @@
   "devDependencies": {
     "concurrently": "^8.2.2"
   },
-  "dependencies": {
-    "chroma": "^0.0.1",
-    "chromadb": "^3.2.2"
-  }
 }

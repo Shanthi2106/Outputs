@@ -1,0 +1,30 @@
+# Ignore Python files - we use PostgreSQL, not Python
+**/requirements.txt
+**/requirements-*.txt
+**/*.py
+**/*.pyc
+**/__pycache__/
+**/venv/
+**/env/
+**/.venv
+runtime.txt
+backend/requirements.txt
+backend/requirements-minimal.txt
+
+# Ignore local development files
+*.bat
+*.sh
+*.md
+docs/
+*.log
+
+# Ignore test files
+test-*.ts
+check-*.ts
+*.test.ts
+*.spec.ts
+
+# Ignore local data
+my_chroma_data/
+*.db
+*.sqlite

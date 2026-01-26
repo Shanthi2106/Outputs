@@ -43,3 +43,18 @@ Thumbs.db
 # Testing
 coverage/
 .nyc_output/
+
+# Python (not needed - using PostgreSQL instead)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+requirements.txt
+requirements-*.txt
+*.egg-info/
+.pytest_cache/
