@@ -16,7 +16,9 @@
   ],
   "functions": {
     "api/index.js": {
-      "includeFiles": "backend/dist/**"
+      "includeFiles": "backend/dist/**",
+      "memory": 1024,
+      "maxDuration": 30
     }
   }
 }

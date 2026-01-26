@@ -214,8 +214,31 @@ class ApiService {
    * Health check
    */
   async healthCheck(): Promise<{ status: string }> {
-    const response = await this.client.get('/health');
-    return response.data;
+    try {
+      // Try /api/v1/health first (preferred endpoint)
+      const response = await this.client.get('/health');
+      return response.data;
+    } catch (error: any) {
+      // If that fails and we're in production, try root /health as fallback
+      const isProduction = typeof window !== 'undefined' && 
+        !window.location.hostname.includes('localhost') && 
+        !window.location.hostname.includes('127.0.0.1');
+      
+      if (isProduction && error?.response?.status === 404) {
+        // Try root health endpoint as fallback
+        try {
+          const fallbackResponse = await axios.get('/api/health', {
+            baseURL: window.location.origin,
+            timeout: 10000,
+          });
+          return fallbackResponse.data;
+        } catch (fallbackError) {
+          // Re-throw original error if fallback also fails
+          throw error;
+        }
+      }
+      throw error;
+    }
   }
 
   /**

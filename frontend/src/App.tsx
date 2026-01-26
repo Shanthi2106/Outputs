@@ -128,15 +128,51 @@ function App() {
                     </p>
                   )}
                   
-                  <p className="text-red-700 text-sm mb-2">
-                    Please ensure:
-                  </p>
-                  <ul className="text-red-700 text-sm list-disc list-inside space-y-1 mb-3">
-                    <li>Backend server is running (check terminal for <code className="bg-red-100 px-1 rounded">npm run dev</code> in backend folder)</li>
-                    <li>Server is running on port 3004</li>
-                    <li>API URL is correct in <code className="bg-red-100 px-1 rounded">frontend/.env</code> (should be: http://localhost:3004/api/v1)</li>
-                    <li>No firewall is blocking the connection</li>
-                  </ul>
+                  {(() => {
+                    // Detect if we're in production (Vercel) or development
+                    const isProduction = typeof window !== 'undefined' && 
+                      !window.location.hostname.includes('localhost') && 
+                      !window.location.hostname.includes('127.0.0.1');
+                    
+                    if (isProduction) {
+                      return (
+                        <>
+                          <p className="text-red-700 text-sm mb-2">
+                            The backend serverless function is not responding. This could be due to:
+                          </p>
+                          <ul className="text-red-700 text-sm list-disc list-inside space-y-1 mb-3">
+                            <li>Backend build failed during deployment</li>
+                            <li>Serverless function timeout or error</li>
+                            <li>Missing environment variables in Vercel</li>
+                            <li>Cold start delay (first request may take longer)</li>
+                          </ul>
+                          <p className="text-red-700 text-sm mb-2">
+                            <strong>To fix:</strong>
+                          </p>
+                          <ul className="text-red-700 text-sm list-disc list-inside space-y-1 mb-3">
+                            <li>Check Vercel Dashboard → Functions tab for errors</li>
+                            <li>Verify environment variables are set in Vercel</li>
+                            <li>Check deployment logs for build errors</li>
+                            <li>Wait a moment and retry (cold start may be slow)</li>
+                          </ul>
+                        </>
+                      );
+                    } else {
+                      return (
+                        <>
+                          <p className="text-red-700 text-sm mb-2">
+                            Please ensure:
+                          </p>
+                          <ul className="text-red-700 text-sm list-disc list-inside space-y-1 mb-3">
+                            <li>Backend server is running (check terminal for <code className="bg-red-100 px-1 rounded">npm run dev</code> in backend folder)</li>
+                            <li>Server is running on port 3004</li>
+                            <li>API URL is correct in <code className="bg-red-100 px-1 rounded">frontend/.env</code> (should be: http://localhost:3004/api/v1)</li>
+                            <li>No firewall is blocking the connection</li>
+                          </ul>
+                        </>
+                      );
+                    }
+                  })()}
                   
                   {lastCheckTime && (
                     <p className="text-red-600 text-xs mb-3">
