@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
+import type { MessageParam } from '@anthropic-ai/sdk/resources';
 import config from '../config';
 import { logger } from '../utils/logger';
 
@@ -164,12 +165,11 @@ export class AIService {
       throw new Error('Anthropic client not initialized');
     }
 
-    const apiMessages = messages.map((msg) => ({
-      role: msg.role === 'user' ? 'user' : ('assistant' as const),
+    const apiMessages: MessageParam[] = messages.map((msg) => ({
+      role: (msg.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
       content: msg.content,
     }));
 
-    // @ts-ignore - Anthropic SDK types may not be fully compatible
     const response = await this.anthropicClient.messages.create({
       model: config.aiModel || 'claude-3-sonnet-20240229',
       max_tokens: 1000,
