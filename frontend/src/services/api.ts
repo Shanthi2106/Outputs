@@ -5,13 +5,28 @@ import axios, { AxiosInstance } from 'axios';
 // - In development: use localhost
 const getApiBaseUrl = () => {
   // Detect production environment - check multiple indicators
+  // Use typeof window check to avoid SSR/build-time errors
+  const isLocalhostHostname = typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  
   const isProduction = 
     import.meta.env.PROD || 
     import.meta.env.MODE === 'production' ||
     import.meta.env.VITE_VERCEL === '1' ||
-    window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+    (typeof window !== 'undefined' && !isLocalhostHostname);
   
   const envApiUrl = import.meta.env.VITE_API_URL;
+  
+  // Log detection for debugging
+  console.log('[API Config]', {
+    PROD: import.meta.env.PROD,
+    MODE: import.meta.env.MODE,
+    VITE_VERCEL: import.meta.env.VITE_VERCEL,
+    VITE_API_URL: envApiUrl,
+    hostname: typeof window !== 'undefined' ? window.location.hostname : 'N/A',
+    isLocalhostHostname,
+    isProduction,
+  });
   
   // If VITE_API_URL is set, validate it
   if (envApiUrl) {
@@ -20,7 +35,7 @@ const getApiBaseUrl = () => {
     
     if (isProduction && isLocalhost) {
       // Force relative path in production, ignore localhost from .env
-      console.warn('Ignoring localhost API URL in production, using relative path');
+      console.warn('[API Config] Ignoring localhost API URL in production, using relative path');
       return '/api/v1';
     }
     
@@ -30,18 +45,19 @@ const getApiBaseUrl = () => {
   
   // In production (Vercel), use relative path
   if (isProduction) {
+    console.log('[API Config] Using production relative path: /api/v1');
     return '/api/v1';
   }
   
   // In development, use localhost
+  console.log('[API Config] Using development localhost URL');
   return 'http://localhost:3004/api/v1';
 };
 
 const API_BASE_URL = getApiBaseUrl();
 
-// Log API URL for debugging
-console.log('API Base URL:', API_BASE_URL);
-console.log('Environment:', import.meta.env.MODE, 'PROD:', import.meta.env.PROD, 'DEV:', import.meta.env.DEV);
+// Log final API URL for debugging
+console.log('[API Service] Final API Base URL:', API_BASE_URL);
 
 class ApiService {
   private client: AxiosInstance;
