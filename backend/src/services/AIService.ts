@@ -1,6 +1,5 @@
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
-import type { MessageParam } from '@anthropic-ai/sdk/resources';
 import config from '../config';
 import { logger } from '../utils/logger';
 
@@ -165,7 +164,7 @@ export class AIService {
       throw new Error('Anthropic client not initialized');
     }
 
-    const apiMessages: MessageParam[] = messages.map((msg) => ({
+    const apiMessages: Array<{ role: 'user' | 'assistant'; content: string }> = messages.map((msg) => ({
       role: (msg.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
       content: msg.content,
     }));
