@@ -20,26 +20,27 @@ Changed from:
 
 To:
 ```json
-"buildCommand": "[ -d backend ] && (cd backend && npm install --include=dev && npm run build) || exit 1; [ -d frontend ] && (cd frontend && npm install --include=dev && npm run build) || exit 1"
+"buildCommand": "[ -d backend ] && (cd backend && NODE_ENV=development npm install && npm run build) || exit 1; [ -d frontend ] && (cd frontend && NODE_ENV=development npm install && npm run build) || exit 1"
 ```
 
-### Why `--include=dev` Works
-- **Explicitly installs devDependencies**: Even if `NODE_ENV=production` is set, `--include=dev` forces npm to install devDependencies
+### Why `NODE_ENV=development` Works
+- **Forces devDependencies installation**: By setting `NODE_ENV=development` before `npm install`, we ensure devDependencies are installed
 - **Required for build**: TypeScript, build tools, and type definitions are needed to compile the code
 - **Only affects build time**: devDependencies are not included in the final deployment
+- **Reliable**: Works consistently across npm versions
 
 ## Alternative Solutions
 
-If `--include=dev` doesn't work, you can also try:
+If this doesn't work, you can also try:
 
 ### Option 1: Use `npm ci` (if package-lock.json exists)
 ```json
 "buildCommand": "[ -d backend ] && (cd backend && npm ci && npm run build) || exit 1; ..."
 ```
 
-### Option 2: Set NODE_ENV explicitly
+### Option 2: Use `--production=false` flag
 ```json
-"buildCommand": "[ -d backend ] && (cd backend && NODE_ENV=development npm install && npm run build) || exit 1; ..."
+"buildCommand": "[ -d backend ] && (cd backend && npm install --production=false && npm run build) || exit 1; ..."
 ```
 
 ### Option 3: Move TypeScript to dependencies (not recommended)
