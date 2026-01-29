@@ -13,6 +13,42 @@ console.log('[Vercel Function] Environment:', {
   VERCEL_ENV: process.env.VERCEL_ENV,
 });
 
+// Check for critical dependencies before loading the app
+function checkDependencies() {
+  const criticalDeps = ['express', 'cors', 'helmet'];
+  const missingDeps = [];
+  const foundDeps = [];
+  
+  for (const dep of criticalDeps) {
+    try {
+      require.resolve(dep);
+      foundDeps.push(dep);
+    } catch (e) {
+      // Try to find in backend node_modules
+      try {
+        require.resolve(`../backend/node_modules/${dep}`);
+        foundDeps.push(`${dep} (from backend/node_modules)`);
+      } catch (e2) {
+        missingDeps.push(dep);
+      }
+    }
+  }
+  
+  if (foundDeps.length > 0) {
+    console.log('[Vercel Function] ✓ Found dependencies:', foundDeps.join(', '));
+  }
+  
+  if (missingDeps.length > 0) {
+    console.warn('[Vercel Function] ⚠ Missing dependencies:', missingDeps.join(', '));
+    console.warn('[Vercel Function] This may cause module loading to fail');
+  }
+  
+  return { foundDeps, missingDeps };
+}
+
+// Check dependencies early
+const depCheck = checkDependencies();
+
 // Try multiple paths to find the backend dist
 const possiblePaths = [
   // Standard Vercel structure (api/index.js looking for backend/dist)
@@ -44,16 +80,58 @@ for (const appPath of possiblePaths) {
   try {
     if (fs.existsSync(appPath)) {
       console.log(`[Vercel Function] Attempting to load from: ${appPath}`);
-      app = require(appPath);
-      loadedPath = appPath;
-      console.log(`[Vercel Function] ✓ Successfully loaded Express app from: ${appPath}`);
-      break;
+      
+      // Check if it's a valid file
+      const stats = fs.statSync(appPath);
+      if (!stats.isFile()) {
+        console.warn(`[Vercel Function] Path exists but is not a file: ${appPath}`);
+        continue;
+      }
+      
+      // Try to require the module
+      try {
+        app = require(appPath);
+        
+        // Verify that we got an Express app (should have use, get, post methods)
+        if (app && typeof app === 'function') {
+          // Check if it looks like an Express app
+          if (app.use || app.get || app.post || app.listen) {
+            loadedPath = appPath;
+            console.log(`[Vercel Function] ✓ Successfully loaded Express app from: ${appPath}`);
+            console.log(`[Vercel Function] App type: ${typeof app}, has use: ${!!app.use}, has get: ${!!app.get}`);
+            break;
+          } else {
+            console.warn(`[Vercel Function] ⚠ Loaded module from ${appPath} but doesn't look like Express app`);
+            console.warn(`[Vercel Function] Module type: ${typeof app}, keys: ${Object.keys(app || {}).join(', ')}`);
+          }
+        } else {
+          console.warn(`[Vercel Function] ⚠ Loaded module from ${appPath} but it's not a function`);
+          console.warn(`[Vercel Function] Module type: ${typeof app}`);
+        }
+      } catch (requireError) {
+        // More detailed error information
+        console.error(`[Vercel Function] ✗ Failed to require ${appPath}:`, {
+          message: requireError.message,
+          code: requireError.code,
+          name: requireError.name,
+          stack: requireError.stack?.split('\n').slice(0, 10).join('\n'),
+        });
+        
+        // Check if it's a module resolution error
+        if (requireError.code === 'MODULE_NOT_FOUND') {
+          const missingModule = requireError.message.match(/Cannot find module ['"]([^'"]+)['"]/);
+          if (missingModule) {
+            console.error(`[Vercel Function] Missing module: ${missingModule[1]}`);
+            console.error(`[Vercel Function] This suggests a dependency is not available in the serverless function`);
+          }
+        }
+        continue;
+      }
     }
   } catch (error) {
-    console.warn(`[Vercel Function] ✗ Failed to load from ${appPath}:`, {
+    console.warn(`[Vercel Function] ✗ Error checking path ${appPath}:`, {
       message: error.message,
       code: error.code,
-      stack: error.stack?.split('\n').slice(0, 5).join('\n'),
     });
     continue;
   }
@@ -108,7 +186,35 @@ if (!app) {
       triedRequires: requirePaths,
       cwd: process.cwd(),
       __dirname: __dirname,
+      missingDependencies: depCheck.missingDeps,
+      foundDependencies: depCheck.foundDeps,
     });
+    
+    // Additional diagnostics
+    console.error('[Vercel Function] Diagnostic information:');
+    try {
+      const backendDir = path.join(__dirname, '../backend');
+      const distDir = path.join(backendDir, 'dist');
+      const nodeModulesDir = path.join(backendDir, 'node_modules');
+      
+      console.error(`  Backend dir exists: ${fs.existsSync(backendDir)}`);
+      console.error(`  Dist dir exists: ${fs.existsSync(distDir)}`);
+      console.error(`  Node modules dir exists: ${fs.existsSync(nodeModulesDir)}`);
+      
+      if (fs.existsSync(distDir)) {
+        const distFiles = fs.readdirSync(distDir);
+        console.error(`  Dist dir contents: ${distFiles.slice(0, 10).join(', ')}${distFiles.length > 10 ? '...' : ''}`);
+      }
+      
+      if (fs.existsSync(nodeModulesDir)) {
+        const nodeModules = fs.readdirSync(nodeModulesDir);
+        console.error(`  Node modules count: ${nodeModules.length}`);
+        console.error(`  Has express: ${nodeModules.includes('express')}`);
+        console.error(`  Has cors: ${nodeModules.includes('cors')}`);
+      }
+    } catch (diagError) {
+      console.error(`  Could not run diagnostics: ${diagError.message}`);
+    }
     
     // Create a minimal error handler app
     // Try to require express from backend node_modules or root
