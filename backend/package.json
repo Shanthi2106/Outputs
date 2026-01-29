@@ -4,15 +4,15 @@
   "description": "Backend API for AI-Powered Parent Assistant for Autism",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "cross-env NODEJS_HELPERS=0 tsx watch src/index.ts",
     "build": "tsc && node copy-knowledge-base.js",
-    "start": "node dist/index.js",
+    "start": "cross-env NODEJS_HELPERS=0 node dist/index.js",
     "lint": "eslint src --ext .ts",
     "test": "jest",
     "test:watch": "jest --watch",
-    "populate-vectors": "tsx scripts/populate-vectors.ts",
-    "setup-vector-db": "tsx scripts/setup-pgvector.ts",
-    "verify-rag": "tsx scripts/verify-rag.ts"
+    "populate-vectors": "cross-env NODEJS_HELPERS=0 tsx scripts/populate-vectors.ts",
+    "setup-vector-db": "cross-env NODEJS_HELPERS=0 tsx scripts/setup-vector-db.ts",
+    "verify-rag": "cross-env NODEJS_HELPERS=0 tsx scripts/verify-rag.ts"
   },
   "keywords": [
     "autism",
@@ -51,6 +51,7 @@
     "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "^6.17.0",
     "@typescript-eslint/parser": "^6.17.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8.56.0",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.1",
