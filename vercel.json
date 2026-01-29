@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "[ -d backend ] && (cd backend && NODE_ENV=development npm install && npm run build) || exit 1; [ -d frontend ] && (cd frontend && NODE_ENV=development npm install && npm run build) || exit 1",
+  "buildCommand": "npm install && [ -d backend ] && (cd backend && NODE_ENV=development npm install && npm run build) || exit 1; [ -d frontend ] && (cd frontend && NODE_ENV=development npm install && npm run build) || exit 1",
   "outputDirectory": "frontend/dist",
   "installCommand": "echo 'Dependencies installed during build'",
   "framework": null,
@@ -16,7 +16,7 @@
   ],
   "functions": {
     "api/index.js": {
-      "includeFiles": "backend/**",
+      "includeFiles": "{backend/dist,node_modules}/**",
       "memory": 1024,
       "maxDuration": 30
     }
