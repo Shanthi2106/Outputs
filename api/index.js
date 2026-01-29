@@ -1,9 +1,7 @@
-// Vercel serverless function entry point
-// This file imports the compiled Express app from backend/dist
-
-// Disable Node.js helpers (ts-node) so require() resolves to .js files, not .d.cts
+// Disable Node.js helpers first so require() resolves to .js, not .d.cts (e.g. zod)
 process.env.NODEJS_HELPERS = '0';
 
+// Vercel serverless function entry point – loads compiled Express app from backend/dist
 const path = require('path');
 const fs = require('fs');
 
