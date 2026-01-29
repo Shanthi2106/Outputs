@@ -24,6 +24,9 @@
   ],
   "author": "Sai Prashanthi Vemula",
   "license": "UNLICENSED",
+  "engines": {
+    "node": "20.x"
+  },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
     "@pinecone-database/pinecone": "^6.1.4",

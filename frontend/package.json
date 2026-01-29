@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Frontend UI for AI-Powered Parent Assistant for Autism",
   "type": "module",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
