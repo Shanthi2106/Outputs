@@ -16,15 +16,14 @@ async function setupVectorDatabase() {
     logger.info('Vector Database Setup Script');
     logger.info('='.repeat(60));
 
-    // Check if ChromaDB is configured
-    if (!config.chromaUrl) {
-      logger.error('❌ CHROMA_URL not configured in .env file');
-      logger.error('   Please set CHROMA_URL (e.g., http://localhost:8000)');
+    // Check if PostgreSQL (vector DB) is configured
+    if (!config.databaseUrl) {
+      logger.error('❌ DATABASE_URL not configured in .env file');
+      logger.error('   Please set DATABASE_URL (e.g., postgresql://localhost:5432/autism_assistant)');
       process.exit(1);
     }
 
-    logger.info(`ChromaDB URL: ${config.chromaUrl}`);
-    logger.info(`Collection Name: ${config.chromaCollectionName}`);
+    logger.info(`Database URL: ${config.databaseUrl.replace(/:[^:@]+@/, ':****@')}`);
 
     // Check if vector service is available
     if (!vectorService.isAvailable()) {
@@ -39,9 +38,9 @@ async function setupVectorDatabase() {
     } catch (error) {
       logger.error('❌ Failed to initialize vector database:', error);
       logger.error('\nTroubleshooting:');
-      logger.error('  - Ensure ChromaDB is running at:', config.chromaUrl);
-      logger.error('  - Check your CHROMA_URL configuration');
-      logger.error('  - For local setup: docker run -p 8000:8000 chromadb/chroma');
+      logger.error('  - Ensure PostgreSQL is running and pgvector extension is installed');
+      logger.error('  - Check your DATABASE_URL configuration in .env');
+      logger.error('  - Run: CREATE EXTENSION IF NOT EXISTS vector; in your database');
       process.exit(1);
     }
 
