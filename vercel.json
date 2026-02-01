@@ -6,19 +6,8 @@
   "framework": null,
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "/api/index.js"
-    },
-    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ],
-  "functions": {
-    "api/index.js": {
-      "includeFiles": "{backend/dist,node_modules}/**",
-      "memory": 1024,
-      "maxDuration": 30
-    }
-  }
+  ]
 }

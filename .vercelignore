@@ -1,3 +1,7 @@
+# Exclude backend from deployment (frontend-only)
+backend/
+api/
+
 # Ignore Python files - we use PostgreSQL, not Python
 **/requirements.txt
 **/requirements-*.txt

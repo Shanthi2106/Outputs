@@ -15,20 +15,7 @@ if [ ! -f "package.json" ]; then
   exit 1
 fi
 
-# Build backend
-echo "📦 Installing backend dependencies..."
-if [ -d "backend" ]; then
-  cd backend
-  npm install
-  echo "📦 Building backend..."
-  npm run build
-  cd ..
-else
-  echo "Error: backend directory not found"
-  exit 1
-fi
-
-# Build frontend
+# Build frontend only (backend excluded from Vercel deployment)
 echo "📦 Installing frontend dependencies..."
 if [ -d "frontend" ]; then
   cd frontend
