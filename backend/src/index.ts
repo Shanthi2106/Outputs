@@ -32,28 +32,21 @@ const app: Application = express();
 // Middleware
 logger.info('Step 4: Configuring middleware...');
 app.use(helmet());
-// CORS configuration - allow Vercel origins in production
+// CORS configuration - allow frontend origins (Vercel, Render, localhost)
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
+    // Allow requests with no origin (e.g. curl, Postman, server-to-server)
     if (!origin) return callback(null, true);
-    
-    // In production (Vercel), allow any Vercel domain
-    const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV;
-    if (isVercel) {
-      // Allow any Vercel domain (*.vercel.app) or the configured CORS origin
-      const isVercelDomain = origin.includes('.vercel.app');
-      const isConfiguredOrigin = origin === config.corsOrigin;
-      if (isVercelDomain || isConfiguredOrigin) {
-        return callback(null, true);
-      }
-    }
-    
-    // In development or if origin matches configured CORS origin
-    if (origin === config.corsOrigin) {
-      return callback(null, true);
-    }
-    
+
+    // Exact match to configured CORS origin (e.g. set on Render/Vercel)
+    if (origin === config.corsOrigin) return callback(null, true);
+
+    // Allow any *.vercel.app (frontend on Vercel, backend on Render or elsewhere)
+    if (origin.endsWith('.vercel.app')) return callback(null, true);
+
+    // Allow localhost for development
+    if (/^https?:\/\/localhost(:\d+)?$/.test(origin)) return callback(null, true);
+
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
