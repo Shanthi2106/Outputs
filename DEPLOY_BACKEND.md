@@ -62,10 +62,11 @@ If you want, I can re-apply the exact `vercel.json` and `.vercelignore` edits to
 
 1. Go to [render.com](https://render.com) → **New → Web Service**.
 2. Connect the repo and set **Root Directory** to `backend`.
-3. **Build command:** `npm install && npm run build`  
-   **Start command:** `npm run start`
-4. **Environment:** Add the same env vars; Render will set `PORT` for you.
-5. After deploy, use the generated URL (e.g. `https://your-service.onrender.com`) as the backend base URL in your frontend (`VITE_API_URL` or equivalent).
+3. **Environment:** Choose **Docker**. Render will use [backend/Dockerfile](backend/Dockerfile); the build context is the `backend` directory, so the Dockerfile’s `COPY` paths are correct.
+4. **Environment variables:** Add the same env vars in the Render dashboard; Render sets `PORT` for you.
+5. Deploy. Use the generated URL (e.g. `https://your-service.onrender.com`) as the backend base URL in your frontend (`VITE_API_URL` or equivalent).
+
+**If you prefer Node (no Docker):** Set **Build command** to `npm install && npm run build` and **Start command** to `npm run start` instead of using Docker.
 
 ---
 
@@ -99,13 +100,15 @@ If you want, I can re-apply the exact `vercel.json` and `.vercelignore` edits to
 
 ## Option 5: Docker (recommended for backend)
 
-The repo includes a production-ready **multi-stage** [backend/Dockerfile](backend/Dockerfile) and a root [.dockerignore](.dockerignore). The image uses Node 20 Alpine and includes the built app plus the knowledge-base.
+The repo includes a production-ready **multi-stage** [backend/Dockerfile](backend/Dockerfile) and [backend/.dockerignore](backend/.dockerignore). The image uses Node 20 Alpine and includes the built app plus the knowledge-base. The Dockerfile expects the **build context to be the `backend` directory** (so it works on Render with Root Directory = `backend` and when building locally with the command below).
 
-**Build** (from **project root**, not inside `backend/`):
+**Build** (context = `backend` directory):
 
 ```bash
-docker build -f backend/Dockerfile -t autism-backend .
+docker build -f backend/Dockerfile -t autism-backend backend
 ```
+
+Or from inside `backend/`: `docker build -t autism-backend .`
 
 **Run** (pass env vars with `-e` or `--env-file`):
 
@@ -137,4 +140,4 @@ docker run -p 3000:3000 --env-file backend/.env autism-backend
 2. **Frontend:** Point the frontend at the new API (e.g. `VITE_API_URL=https://your-backend.up.railway.app`) and redeploy the frontend so it uses that URL.
 3. **Health check:** Open `https://your-backend-url/api/health` (or the path your app uses) to confirm the backend is up.
 
-For Docker deployment, use the [backend/Dockerfile](backend/Dockerfile) and build from the project root as shown in Option 5.
+For Docker deployment, use the [backend/Dockerfile](backend/Dockerfile) with build context `backend` (Option 5). On Render, set Root Directory to `backend` and use Docker (Option 3).

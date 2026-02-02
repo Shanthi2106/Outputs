@@ -4,7 +4,10 @@
 const fs = require('fs');
 const path = require('path');
 
-const sourceDir = path.join(__dirname, '../knowledge-base');
+// Prefer backend/knowledge-base (Docker/Render context), then repo root knowledge-base
+const sourceDir = fs.existsSync(path.join(__dirname, 'knowledge-base'))
+  ? path.join(__dirname, 'knowledge-base')
+  : path.join(__dirname, '../knowledge-base');
 const targetDir = path.join(__dirname, 'dist/knowledge-base');
 
 try {
