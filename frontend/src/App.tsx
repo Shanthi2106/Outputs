@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Header from './components/Common/Header';
 import Footer from './components/Common/Footer';
 import Disclaimer from './components/Common/Disclaimer';
+import AddToHomeScreen from './components/Common/AddToHomeScreen';
 import ChatInterface from './components/Chat/ChatInterface';
 import TabNavigation from './components/Layout/TabNavigation';
 import DocumentUpload from './components/Document/DocumentUpload';
@@ -103,6 +104,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
+      <AddToHomeScreen />
 
       <main className="flex-1 container mx-auto px-4 py-8">
         {showDisclaimer && (

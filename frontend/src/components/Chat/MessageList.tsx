@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Message } from '@/types';
 import LoadingIndicator from './LoadingIndicator';
+import TermVideos from '../Common/TermVideos';
 
 interface MessageListProps {
   messages: Message[];
@@ -28,7 +29,11 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
           }`}
         >
           <div
-            className={`max-w-[80%] rounded-lg p-4 ${
+            className={`${
+              message.relatedTerms?.length
+                ? 'max-w-[95%] sm:max-w-[85%]'
+                : 'max-w-[80%]'
+            } rounded-lg p-4 ${
               message.role === 'user'
                 ? 'bg-primary-600 text-white'
                 : 'bg-gray-100 text-gray-900'
@@ -53,6 +58,21 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
             )}
 
             <p className="whitespace-pre-wrap">{message.content}</p>
+
+            {message.role === 'assistant' &&
+              message.relatedTerms &&
+              message.relatedTerms.length > 0 && (
+                <div className="mt-4 pt-3 border-t border-gray-200 space-y-4">
+                  {message.relatedTerms.map((t) => (
+                    <TermVideos
+                      key={t.term}
+                      termName={t.term}
+                      videos={t.videos}
+                      compact
+                    />
+                  ))}
+                </div>
+              )}
 
             <div
               className={`text-xs mt-2 ${

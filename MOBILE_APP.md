@@ -9,11 +9,15 @@ The app is a **Progressive Web App (PWA)**. Users can install it on their phone 
 2. Tap the **menu** (⋮) → **“Install app”** or **“Add to Home screen”**.
 3. Confirm. The icon appears on your home screen; open it to use the app in standalone mode.
 
-### iPhone / iPad (Safari)
-1. Open the app in **Safari** (Chrome on iOS cannot install PWAs).
-2. Tap the **Share** button (□↑).
-3. Scroll and tap **“Add to Home Screen”**.
-4. Edit the name if you want, then tap **Add**. The icon appears on your home screen.
+### iPhone / iPad (Safari only — no “Install” button)
+On iPhone there is **no** “Install app” button. You add the app from Safari’s **Share** menu:
+
+1. **Open the app in Safari** (it does not work in Chrome or other browsers on iOS).
+2. Tap the **Share** icon at the bottom of Safari (square with an arrow pointing up).
+3. In the menu, scroll down and tap **“Add to Home Screen”**.
+4. Tap **Add** (or change the name first if you like). The app icon appears on your home screen.
+
+When you open the app from the home screen, it runs in full-screen like a normal app.
 
 ### Desktop (Chrome / Edge)
 - Look for an **install** icon in the address bar, or use the menu → **“Install Autism Parent Assistant”**.

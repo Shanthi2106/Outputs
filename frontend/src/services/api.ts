@@ -186,7 +186,16 @@ class ApiService {
   async sendMessage(
     message: string,
     conversationHistory?: Array<{ role: string; content: string }>
-  ): Promise<{ response: string; isMedicalAdvice: boolean }> {
+  ): Promise<{
+    response: string;
+    isMedicalAdvice: boolean;
+    foundTerms?: Array<{
+      term: string;
+      category: string;
+      fullName?: string;
+      videos?: Array<{ title: string; youtubeId: string; source?: string }>;
+    }>;
+  }> {
     const response = await this.client.post('/conversation', {
       message,
       history: conversationHistory,

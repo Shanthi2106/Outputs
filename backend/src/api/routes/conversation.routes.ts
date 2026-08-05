@@ -28,6 +28,8 @@ router.post('/', validate(conversationSchema), async (req: Request, res: Respons
       foundTerms: result.foundTerms?.map((t) => ({
         term: t.term,
         category: t.category,
+        fullName: t.fullName,
+        videos: t.videos || [],
       })),
     });
   } catch (error) {

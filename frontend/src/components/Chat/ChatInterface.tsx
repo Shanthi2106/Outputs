@@ -71,13 +71,20 @@ export default function ChatInterface({ initialMessages, conversationName }: Cha
       // Send message to API
       const response = await api.sendMessage(content, history);
 
-      // Add assistant response
+      // Add assistant response — show videos (or YouTube search) for glossary terms found
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: response.response,
         timestamp: new Date(),
         isMedicalAdviceWarning: response.isMedicalAdvice,
+        relatedTerms:
+          response.foundTerms && response.foundTerms.length > 0
+            ? response.foundTerms.map((t) => ({
+                term: t.term,
+                videos: t.videos || [],
+              }))
+            : undefined,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);

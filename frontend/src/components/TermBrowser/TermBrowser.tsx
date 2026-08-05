@@ -74,7 +74,10 @@ export default function TermBrowser() {
       'Teaching handwashing by breaking it into steps: turn on water, wet hands, apply soap, rub hands, rinse, dry'
     ],
     relatedTerms: ['DTT', 'Natural Environment Teaching', 'Positive Reinforcement'],
-    documentTypes: ['IEP', 'Therapy Notes', 'Assessment Report']
+    documentTypes: ['IEP', 'Therapy Notes', 'Assessment Report'],
+    videos: [
+      { title: 'What Is ABA Therapy for Autism?', youtubeId: 'wi9YLm5a2KU', source: 'Action Behavior Centers' },
+    ],
   },
   {
     term: 'IEP',
@@ -87,7 +90,11 @@ export default function TermBrowser() {
       'Goals like "improve ability to take turns in conversations" with specific measurements'
     ],
     relatedTerms: ['504 Plan', 'Annual Goals', 'Accommodations', 'Modifications'],
-    documentTypes: ['IEP', 'School Records']
+    documentTypes: ['IEP', 'School Records'],
+    videos: [
+      { title: 'What Is an IEP?', youtubeId: 'tGYO9XWhI2Y', source: 'Understood' },
+      { title: 'IEP Meeting Tips for Parents', youtubeId: 'OuljSHMujEA', source: 'Understood' },
+    ],
   },
   {
     term: 'Echolalia',
@@ -131,7 +138,10 @@ export default function TermBrowser() {
       'Spinning objects or themselves'
     ],
     relatedTerms: ['Self-Regulation', 'Sensory Seeking', 'Repetitive Behaviors'],
-    documentTypes: ['Behavior Plan', 'IEP', 'Assessment Report']
+    documentTypes: ['Behavior Plan', 'IEP', 'Assessment Report'],
+    videos: [
+      { title: 'Autistic Stimming Explained', youtubeId: 'tX62J3hz-eQ', source: 'Educational overview' },
+    ],
   },
   {
     term: 'Social Skills',
@@ -191,7 +201,10 @@ export default function TermBrowser() {
       'Becoming non-verbal or unresponsive when overstimulated'
     ],
     relatedTerms: ['Shutdown', 'Dysregulation', 'Sensory Overload', 'Fight or Flight Response'],
-    documentTypes: ['Behavior Plan', 'IEP', 'Crisis Plan']
+    documentTypes: ['Behavior Plan', 'IEP', 'Crisis Plan'],
+    videos: [
+      { title: 'Tantrum or Meltdown? How to Tell the Difference', youtubeId: 'a_WIOgMPwlU', source: 'Dr. Mark Bowers' },
+    ],
   },
   {
     term: 'AAC',
@@ -206,7 +219,10 @@ export default function TermBrowser() {
       'Communication boards with pictures or words'
     ],
     relatedTerms: ['PECS', 'Speech-Generating Device', 'Visual Supports', 'Sign Language'],
-    documentTypes: ['IEP', 'Speech Therapy Notes', 'Communication Plan']
+    documentTypes: ['IEP', 'Speech Therapy Notes', 'Communication Plan'],
+    videos: [
+      { title: 'AAC & PECS in a Speech Therapy Session', youtubeId: '6mr5d1eSrbk', source: 'Speech therapy example' },
+    ],
   },
   ];
 

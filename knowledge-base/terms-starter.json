@@ -10,8 +10,23 @@
       "Teaching handwashing by breaking it into steps: turn on water, wet hands, apply soap, rub hands, rinse, dry",
       "Using a token board where your child earns stars for completing tasks, then trades stars for a preferred activity"
     ],
-    "relatedTerms": ["DTT", "Natural Environment Teaching", "Positive Reinforcement"],
-    "documentTypes": ["IEP", "Therapy Notes", "Assessment Report"]
+    "relatedTerms": [
+      "DTT",
+      "Natural Environment Teaching",
+      "Positive Reinforcement"
+    ],
+    "documentTypes": [
+      "IEP",
+      "Therapy Notes",
+      "Assessment Report"
+    ],
+    "videos": [
+      {
+        "title": "What Is ABA Therapy for Autism?",
+        "youtubeId": "wi9YLm5a2KU",
+        "source": "Action Behavior Centers"
+      }
+    ]
   },
   {
     "term": "IEP",
@@ -24,8 +39,30 @@
       "Goals like 'improve ability to take turns in conversations' with specific measurements",
       "Accommodations like preferential seating, visual schedules, or access to sensory breaks"
     ],
-    "relatedTerms": ["504 Plan", "Annual Goals", "Accommodations", "Modifications", "FAPE", "LRE"],
-    "documentTypes": ["IEP", "School Records"]
+    "relatedTerms": [
+      "504 Plan",
+      "Annual Goals",
+      "Accommodations",
+      "Modifications",
+      "FAPE",
+      "LRE"
+    ],
+    "documentTypes": [
+      "IEP",
+      "School Records"
+    ],
+    "videos": [
+      {
+        "title": "What Is an IEP? | Individualized Education Program Explained",
+        "youtubeId": "tGYO9XWhI2Y",
+        "source": "Understood"
+      },
+      {
+        "title": "IEP Meeting Tips for Parents",
+        "youtubeId": "OuljSHMujEA",
+        "source": "Understood"
+      }
+    ]
   },
   {
     "term": "Echolalia",
@@ -38,8 +75,17 @@
       "Your child repeatedly quotes lines from a favorite movie",
       "Repeating the last few words of what someone says"
     ],
-    "relatedTerms": ["Scripting", "Verbal Stimming", "Delayed Echolalia"],
-    "documentTypes": ["Speech Therapy Notes", "Assessment Report", "IEP"]
+    "relatedTerms": [
+      "Scripting",
+      "Verbal Stimming",
+      "Delayed Echolalia"
+    ],
+    "documentTypes": [
+      "Speech Therapy Notes",
+      "Assessment Report",
+      "IEP"
+    ],
+    "videos": []
   },
   {
     "term": "Sensory Processing",
@@ -53,8 +99,19 @@
       "Seeking out spinning or jumping activities",
       "Not noticing when hands are messy or face is dirty"
     ],
-    "relatedTerms": ["Sensory Integration", "SPD", "Sensory Seeking", "Sensory Avoiding", "Occupational Therapy"],
-    "documentTypes": ["OT Evaluation", "Sensory Profile", "IEP"]
+    "relatedTerms": [
+      "Sensory Integration",
+      "SPD",
+      "Sensory Seeking",
+      "Sensory Avoiding",
+      "Occupational Therapy"
+    ],
+    "documentTypes": [
+      "OT Evaluation",
+      "Sensory Profile",
+      "IEP"
+    ],
+    "videos": []
   },
   {
     "term": "Stimming",
@@ -68,8 +125,23 @@
       "Making repetitive sounds or humming",
       "Spinning objects or themselves"
     ],
-    "relatedTerms": ["Self-Regulation", "Sensory Seeking", "Repetitive Behaviors"],
-    "documentTypes": ["Behavior Plan", "IEP", "Assessment Report"]
+    "relatedTerms": [
+      "Self-Regulation",
+      "Sensory Seeking",
+      "Repetitive Behaviors"
+    ],
+    "documentTypes": [
+      "Behavior Plan",
+      "IEP",
+      "Assessment Report"
+    ],
+    "videos": [
+      {
+        "title": "Autistic Stimming Explained",
+        "youtubeId": "tX62J3hz-eQ",
+        "source": "Educational overview"
+      }
+    ]
   },
   {
     "term": "Social Skills",
@@ -83,8 +155,18 @@
       "Understanding when someone is joking versus serious",
       "Recognizing facial expressions and what they mean"
     ],
-    "relatedTerms": ["Pragmatic Language", "Theory of Mind", "Perspective Taking", "Social Thinking"],
-    "documentTypes": ["IEP", "Social Skills Assessment", "Therapy Notes"]
+    "relatedTerms": [
+      "Pragmatic Language",
+      "Theory of Mind",
+      "Perspective Taking",
+      "Social Thinking"
+    ],
+    "documentTypes": [
+      "IEP",
+      "Social Skills Assessment",
+      "Therapy Notes"
+    ],
+    "videos": []
   },
   {
     "term": "Executive Function",
@@ -98,8 +180,18 @@
       "Stopping one activity and starting another",
       "Keeping track of belongings"
     ],
-    "relatedTerms": ["Working Memory", "Cognitive Flexibility", "Task Initiation", "Organization Skills"],
-    "documentTypes": ["IEP", "Neuropsychological Evaluation", "Progress Report"]
+    "relatedTerms": [
+      "Working Memory",
+      "Cognitive Flexibility",
+      "Task Initiation",
+      "Organization Skills"
+    ],
+    "documentTypes": [
+      "IEP",
+      "Neuropsychological Evaluation",
+      "Progress Report"
+    ],
+    "videos": []
   },
   {
     "term": "Accommodations",
@@ -114,8 +206,23 @@
       "Frequent breaks during work",
       "Visual schedules to understand daily routine"
     ],
-    "relatedTerms": ["Modifications", "Supports", "IEP", "504 Plan"],
-    "documentTypes": ["IEP", "504 Plan"]
+    "relatedTerms": [
+      "Modifications",
+      "Supports",
+      "IEP",
+      "504 Plan"
+    ],
+    "documentTypes": [
+      "IEP",
+      "504 Plan"
+    ],
+    "videos": [
+      {
+        "title": "What Is an IEP? (includes accommodations)",
+        "youtubeId": "tGYO9XWhI2Y",
+        "source": "Understood"
+      }
+    ]
   },
   {
     "term": "Meltdown",
@@ -128,8 +235,29 @@
       "Aggressive behavior when too many demands are placed at once",
       "Becoming non-verbal or unresponsive when overstimulated"
     ],
-    "relatedTerms": ["Shutdown", "Dysregulation", "Sensory Overload", "Fight or Flight Response"],
-    "documentTypes": ["Behavior Plan", "IEP", "Crisis Plan"]
+    "relatedTerms": [
+      "Shutdown",
+      "Dysregulation",
+      "Sensory Overload",
+      "Fight or Flight Response"
+    ],
+    "documentTypes": [
+      "Behavior Plan",
+      "IEP",
+      "Crisis Plan"
+    ],
+    "videos": [
+      {
+        "title": "Tantrum or Meltdown? How to Tell the Difference",
+        "youtubeId": "a_WIOgMPwlU",
+        "source": "Dr. Mark Bowers"
+      },
+      {
+        "title": "Understanding Autistic Meltdowns and Shutdowns",
+        "youtubeId": "aDD8-exFb-s",
+        "source": "Through the Roof"
+      }
+    ]
   },
   {
     "term": "AAC",
@@ -143,8 +271,24 @@
       "Sign language",
       "Communication boards with pictures or words"
     ],
-    "relatedTerms": ["PECS", "Speech-Generating Device", "Visual Supports", "Sign Language"],
-    "documentTypes": ["IEP", "Speech Therapy Notes", "Communication Plan"]
+    "relatedTerms": [
+      "PECS",
+      "Speech-Generating Device",
+      "Visual Supports",
+      "Sign Language"
+    ],
+    "documentTypes": [
+      "IEP",
+      "Speech Therapy Notes",
+      "Communication Plan"
+    ],
+    "videos": [
+      {
+        "title": "AAC & PECS in a Speech Therapy Session",
+        "youtubeId": "6mr5d1eSrbk",
+        "source": "Speech therapy example"
+      }
+    ]
   },
   {
     "term": "FAPE",
@@ -157,8 +301,24 @@
       "The school must provide accommodations at no cost - you shouldn't have to buy equipment or pay for aides",
       "If your child isn't making progress with current services, the IEP may need to be revised to meet FAPE"
     ],
-    "relatedTerms": ["IEP", "IDEA", "LRE", "Accommodations"],
-    "documentTypes": ["IEP", "Prior Written Notice", "Due Process"]
+    "relatedTerms": [
+      "IEP",
+      "IDEA",
+      "LRE",
+      "Accommodations"
+    ],
+    "documentTypes": [
+      "IEP",
+      "Prior Written Notice",
+      "Due Process"
+    ],
+    "videos": [
+      {
+        "title": "What Is an IEP? (covers FAPE basics)",
+        "youtubeId": "tGYO9XWhI2Y",
+        "source": "Understood"
+      }
+    ]
   },
   {
     "term": "BCBA",
@@ -171,8 +331,24 @@
       "During a monthly meeting, the BCBA reviews data graphs showing your child's progress on each goal",
       "The BCBA trains you on strategies to use at home so skills generalize beyond therapy"
     ],
-    "relatedTerms": ["ABA", "RBT", "Behavior Plan", "DTT"],
-    "documentTypes": ["ABA Treatment Plan", "Progress Report", "Therapy Notes"]
+    "relatedTerms": [
+      "ABA",
+      "RBT",
+      "Behavior Plan",
+      "DTT"
+    ],
+    "documentTypes": [
+      "ABA Treatment Plan",
+      "Progress Report",
+      "Therapy Notes"
+    ],
+    "videos": [
+      {
+        "title": "What Is ABA Therapy? (includes BCBA / RBT roles)",
+        "youtubeId": "wi9YLm5a2KU",
+        "source": "Action Behavior Centers"
+      }
+    ]
   },
   {
     "term": "RBT",
@@ -185,8 +361,24 @@
       "The RBT uses a timer and visual schedule to help your child transition between activities",
       "During sessions, the RBT takes data on a tablet, marking whether your child completed each task independently"
     ],
-    "relatedTerms": ["ABA", "BCBA", "Data Collection", "Discrete Trial Training"],
-    "documentTypes": ["Session Notes", "Data Sheets", "Progress Report"]
+    "relatedTerms": [
+      "ABA",
+      "BCBA",
+      "Data Collection",
+      "Discrete Trial Training"
+    ],
+    "documentTypes": [
+      "Session Notes",
+      "Data Sheets",
+      "Progress Report"
+    ],
+    "videos": [
+      {
+        "title": "What Is ABA Therapy? (includes BCBA / RBT roles)",
+        "youtubeId": "wi9YLm5a2KU",
+        "source": "Action Behavior Centers"
+      }
+    ]
   },
   {
     "term": "PECS",
@@ -199,8 +391,24 @@
       "Using a sentence strip: 'I want' + picture of 'cookie' to make a request",
       "Your child uses PECS to tell you about seeing a dog during a walk: 'I see' + picture of 'dog'"
     ],
-    "relatedTerms": ["AAC", "Visual Supports", "Communication Board", "Speech Therapy"],
-    "documentTypes": ["Communication Plan", "IEP", "Speech Therapy Notes"]
+    "relatedTerms": [
+      "AAC",
+      "Visual Supports",
+      "Communication Board",
+      "Speech Therapy"
+    ],
+    "documentTypes": [
+      "Communication Plan",
+      "IEP",
+      "Speech Therapy Notes"
+    ],
+    "videos": [
+      {
+        "title": "PECS Picture Exchange Communication System for Autism",
+        "youtubeId": "6rcJ8SdbZMw",
+        "source": "Pinnacle Blooms"
+      }
+    ]
   },
   {
     "term": "BIP",
@@ -213,8 +421,24 @@
       "For escape-motivated behavior: BIP includes offering choices, frequent breaks, and teaching 'help' sign to request assistance",
       "When seeking attention: BIP schedules regular check-ins, teaches appropriate attention-seeking, and provides planned ignoring for inappropriate bids"
     ],
-    "relatedTerms": ["FBA", "Replacement Behavior", "Function of Behavior", "Antecedent"],
-    "documentTypes": ["BIP", "IEP", "FBA Report"]
+    "relatedTerms": [
+      "FBA",
+      "Replacement Behavior",
+      "Function of Behavior",
+      "Antecedent"
+    ],
+    "documentTypes": [
+      "BIP",
+      "IEP",
+      "FBA Report"
+    ],
+    "videos": [
+      {
+        "title": "Tantrum or Meltdown? (behavior support context)",
+        "youtubeId": "a_WIOgMPwlU",
+        "source": "Dr. Mark Bowers"
+      }
+    ]
   },
   {
     "term": "FBA",
@@ -227,8 +451,24 @@
       "Noticing hitting happens when you're on the phone reveals the function is attention-seeking",
       "Tracking shows self-stimulatory behavior increases when environment is understimulating, suggesting sensory-seeking function"
     ],
-    "relatedTerms": ["BIP", "ABC Data", "Function of Behavior", "Replacement Behavior"],
-    "documentTypes": ["FBA Report", "IEP", "Behavior Assessment"]
+    "relatedTerms": [
+      "BIP",
+      "ABC Data",
+      "Function of Behavior",
+      "Replacement Behavior"
+    ],
+    "documentTypes": [
+      "FBA Report",
+      "IEP",
+      "Behavior Assessment"
+    ],
+    "videos": [
+      {
+        "title": "Tantrum or Meltdown? (behavior assessment context)",
+        "youtubeId": "a_WIOgMPwlU",
+        "source": "Dr. Mark Bowers"
+      }
+    ]
   },
   {
     "term": "Social Stories",
@@ -241,7 +481,16 @@
       "For turn-taking: 'At recess, my friends want to use the swing. Sometimes I can swing first. Sometimes I wait for my turn. Waiting can be hard, but my turn will come. I can count to 20 while I wait.'",
       "Before a fire drill: 'Sometimes at school, we have fire drills. The alarm will be VERY loud. I can cover my ears. We will walk outside quietly. When it's safe, we go back inside.'"
     ],
-    "relatedTerms": ["Visual Supports", "Social Skills", "Perspective Taking"],
-    "documentTypes": ["IEP", "Social Skills Plan", "Behavior Support"]
+    "relatedTerms": [
+      "Visual Supports",
+      "Social Skills",
+      "Perspective Taking"
+    ],
+    "documentTypes": [
+      "IEP",
+      "Social Skills Plan",
+      "Behavior Support"
+    ],
+    "videos": []
   }
 ]
