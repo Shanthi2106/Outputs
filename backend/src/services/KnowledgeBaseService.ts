@@ -172,12 +172,7 @@ export class KnowledgeBaseService {
       explanation += `**Related terms:** ${term.relatedTerms.join(', ')}\n`;
     }
 
-    if (term.videos && term.videos.length > 0) {
-      explanation += `\n**Helpful videos:**\n`;
-      term.videos.forEach((video) => {
-        explanation += `- ${video.title}: https://www.youtube.com/watch?v=${video.youtubeId}\n`;
-      });
-    }
+    // Videos are shown as embedded players in the UI — do not dump raw links into text.
 
     return explanation;
   }

@@ -316,6 +316,8 @@ WHEN PROVIDING INFORMATION:
 
 Available specialized knowledge base terms: ${mentionedTerms.map((t) => t.term).join(', ') || 'comprehensive autism terminology database'}.${ragContext}
 
+IMPORTANT: Do NOT include YouTube links or ask the parent to search for videos. Educational videos are shown automatically in the app UI under your answer when a known term is mentioned.
+
 Remember: Parents come to you because Google gave them generic information. They need YOUR GPT-4-powered expertise to understand what terms mean FOR THEIR CHILD and WHAT TO DO ABOUT IT. Use GPT-4's advanced reasoning to provide nuanced, context-aware responses.`;
 
       const aiResponse = await aiService.generateResponse(conversationMessages, systemPrompt);

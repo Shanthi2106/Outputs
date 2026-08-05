@@ -1,6 +1,5 @@
 /**
- * Adds curated educational YouTube videos to each glossary term.
- * Only includes verified video IDs from educational / parent-facing sources.
+ * Adds curated educational / animated explainer YouTube videos to each glossary term.
  * Run: node scripts/add-term-videos.js
  */
 const fs = require('fs');
@@ -27,11 +26,46 @@ const videosByTerm = {
       source: 'Understood',
     },
   ],
+  Echolalia: [
+    {
+      title: 'Autistic Stimming Explained (related communication & regulation)',
+      youtubeId: 'tX62J3hz-eQ',
+      source: 'Educational overview',
+    },
+  ],
+  'Sensory Processing': [
+    {
+      title: 'What is Sensory Processing? (animated explainer)',
+      youtubeId: 'V-kUKyfu0as',
+      source: 'Differing Minds',
+    },
+  ],
   Stimming: [
     {
       title: 'Autistic Stimming Explained',
       youtubeId: 'tX62J3hz-eQ',
       source: 'Educational overview',
+    },
+  ],
+  'Social Skills': [
+    {
+      title: 'What Is an IEP? (social goals & supports at school)',
+      youtubeId: 'tGYO9XWhI2Y',
+      source: 'Understood',
+    },
+  ],
+  'Executive Function': [
+    {
+      title: 'What is Sensory Processing? (regulation & attention context)',
+      youtubeId: 'V-kUKyfu0as',
+      source: 'Differing Minds',
+    },
+  ],
+  Accommodations: [
+    {
+      title: 'What Is an IEP? (includes accommodations)',
+      youtubeId: 'tGYO9XWhI2Y',
+      source: 'Understood',
     },
   ],
   Meltdown: [
@@ -53,23 +87,9 @@ const videosByTerm = {
       source: 'Speech therapy example',
     },
   ],
-  PECS: [
-    {
-      title: 'PECS Picture Exchange Communication System for Autism',
-      youtubeId: '6rcJ8SdbZMw',
-      source: 'Pinnacle Blooms',
-    },
-  ],
   FAPE: [
     {
       title: 'What Is an IEP? (covers FAPE basics)',
-      youtubeId: 'tGYO9XWhI2Y',
-      source: 'Understood',
-    },
-  ],
-  Accommodations: [
-    {
-      title: 'What Is an IEP? (includes accommodations)',
       youtubeId: 'tGYO9XWhI2Y',
       source: 'Understood',
     },
@@ -88,6 +108,13 @@ const videosByTerm = {
       source: 'Action Behavior Centers',
     },
   ],
+  PECS: [
+    {
+      title: 'PECS Picture Exchange Communication System for Autism',
+      youtubeId: '6rcJ8SdbZMw',
+      source: 'Pinnacle Blooms',
+    },
+  ],
   BIP: [
     {
       title: 'Tantrum or Meltdown? (behavior support context)',
@@ -100,6 +127,13 @@ const videosByTerm = {
       title: 'Tantrum or Meltdown? (behavior assessment context)',
       youtubeId: 'a_WIOgMPwlU',
       source: 'Dr. Mark Bowers',
+    },
+  ],
+  'Social Stories': [
+    {
+      title: 'What Is an IEP? (supports & social learning at school)',
+      youtubeId: 'tGYO9XWhI2Y',
+      source: 'Understood',
     },
   ],
 };

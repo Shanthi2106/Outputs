@@ -85,7 +85,13 @@
       "Assessment Report",
       "IEP"
     ],
-    "videos": []
+    "videos": [
+      {
+        "title": "Autistic Stimming Explained (related communication & regulation)",
+        "youtubeId": "tX62J3hz-eQ",
+        "source": "Educational overview"
+      }
+    ]
   },
   {
     "term": "Sensory Processing",
@@ -111,7 +117,13 @@
       "Sensory Profile",
       "IEP"
     ],
-    "videos": []
+    "videos": [
+      {
+        "title": "What is Sensory Processing? (animated explainer)",
+        "youtubeId": "V-kUKyfu0as",
+        "source": "Differing Minds"
+      }
+    ]
   },
   {
     "term": "Stimming",
@@ -166,7 +178,13 @@
       "Social Skills Assessment",
       "Therapy Notes"
     ],
-    "videos": []
+    "videos": [
+      {
+        "title": "What Is an IEP? (social goals & supports at school)",
+        "youtubeId": "tGYO9XWhI2Y",
+        "source": "Understood"
+      }
+    ]
   },
   {
     "term": "Executive Function",
@@ -191,7 +209,13 @@
       "Neuropsychological Evaluation",
       "Progress Report"
     ],
-    "videos": []
+    "videos": [
+      {
+        "title": "What is Sensory Processing? (regulation & attention context)",
+        "youtubeId": "V-kUKyfu0as",
+        "source": "Differing Minds"
+      }
+    ]
   },
   {
     "term": "Accommodations",
@@ -491,6 +515,12 @@
       "Social Skills Plan",
       "Behavior Support"
     ],
-    "videos": []
+    "videos": [
+      {
+        "title": "What Is an IEP? (supports & social learning at school)",
+        "youtubeId": "tGYO9XWhI2Y",
+        "source": "Understood"
+      }
+    ]
   }
 ]

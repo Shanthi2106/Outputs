@@ -20,7 +20,7 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
   }, [messages, isLoading]);
 
   return (
-    <div className="space-y-4 mb-6 max-h-[500px] overflow-y-auto pr-2">
+    <div className="space-y-4 mb-6 max-h-[70vh] overflow-y-auto pr-2">
       {messages.map((message) => (
         <div
           key={message.id}
