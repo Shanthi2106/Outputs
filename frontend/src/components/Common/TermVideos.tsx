@@ -6,6 +6,8 @@ interface TermVideosProps {
   termName: string;
   /** Compact layout for chat bubbles */
   compact?: boolean;
+  /** Start playing the first video immediately (used in chat) */
+  autoPlay?: boolean;
 }
 
 function youtubeSearchUrl(termName: string): string {
@@ -17,10 +19,10 @@ function thumbnailUrl(youtubeId: string): string {
   return `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`;
 }
 
-function embedUrl(youtubeId: string): string {
-  // Autoplay when user clicks play; modestbranding keeps focus on the video
+function embedUrl(youtubeId: string, autoplay: boolean): string {
   const params = new URLSearchParams({
-    autoplay: '1',
+    autoplay: autoplay ? '1' : '0',
+    mute: autoplay ? '1' : '0', // browsers require mute for autoplay
     rel: '0',
     modestbranding: '1',
     playsinline: '1',
@@ -28,8 +30,16 @@ function embedUrl(youtubeId: string): string {
   return `https://www.youtube.com/embed/${youtubeId}?${params.toString()}`;
 }
 
-function VideoPlayer({ video, compact }: { video: TermVideo; compact?: boolean }) {
-  const [playing, setPlaying] = useState(false);
+function VideoPlayer({
+  video,
+  compact,
+  autoPlay = false,
+}: {
+  video: TermVideo;
+  compact?: boolean;
+  autoPlay?: boolean;
+}) {
+  const [playing, setPlaying] = useState(autoPlay);
 
   return (
     <div className="rounded-xl overflow-hidden border border-gray-200 bg-black shadow-sm">
@@ -39,14 +49,21 @@ function VideoPlayer({ video, compact }: { video: TermVideo; compact?: boolean }
         }`}
       >
         {playing ? (
-          <iframe
-            className="absolute inset-0 w-full h-full"
-            src={embedUrl(video.youtubeId)}
-            title={video.title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-            referrerPolicy="strict-origin-when-cross-origin"
-          />
+          <>
+            <iframe
+              className="absolute inset-0 w-full h-full"
+              src={embedUrl(video.youtubeId, autoPlay)}
+              title={video.title}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              referrerPolicy="strict-origin-when-cross-origin"
+            />
+            {autoPlay && (
+              <p className="absolute top-2 right-2 z-10 rounded bg-black/70 px-2 py-1 text-[10px] text-white">
+                Video playing (unmute in player for sound)
+              </p>
+            )}
+          </>
         ) : (
           <button
             type="button"
@@ -82,18 +99,23 @@ function VideoPlayer({ video, compact }: { video: TermVideo; compact?: boolean }
   );
 }
 
-export default function TermVideos({ videos = [], termName, compact = false }: TermVideosProps) {
+export default function TermVideos({
+  videos = [],
+  termName,
+  compact = false,
+  autoPlay = false,
+}: TermVideosProps) {
   const playable = videos.filter((v) => v.youtubeId);
 
   return (
-    <div className={compact ? 'mt-3' : 'mb-6'}>
+    <div className={compact ? 'mt-3 mb-3' : 'mb-6'}>
       <h3
         className={`font-semibold text-gray-900 flex items-center ${
           compact ? 'text-sm mb-2' : 'mb-3'
         }`}
       >
         <span className={`${compact ? 'text-base' : 'text-xl'} mr-2`}>🎬</span>
-        Watch an animated explanation
+        Animated explanation
         {termName ? (
           <span className="ml-1 font-normal text-gray-500">— {termName}</span>
         ) : null}
@@ -101,8 +123,13 @@ export default function TermVideos({ videos = [], termName, compact = false }: T
 
       {playable.length > 0 ? (
         <div className={`space-y-4 ${compact ? 'space-y-3' : ''}`}>
-          {playable.map((video) => (
-            <VideoPlayer key={video.youtubeId} video={video} compact={compact} />
+          {playable.map((video, index) => (
+            <VideoPlayer
+              key={video.youtubeId}
+              video={video}
+              compact={compact}
+              autoPlay={autoPlay && index === 0}
+            />
           ))}
         </div>
       ) : (

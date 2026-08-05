@@ -134,23 +134,78 @@ export class KnowledgeBaseService {
   }
 
   /**
-   * Find terms mentioned in a text passage
+   * Find terms mentioned in a text passage (word-boundary aware, longest first)
    */
   findTermsInText(text: string): Term[] {
     const normalizedText = text.toLowerCase();
-    const foundTerms: Term[] = [];
+    const found: Term[] = [];
+    const seen = new Set<string>();
 
-    this.terms.forEach((term) => {
-      // Check if term or full name appears in text
-      if (
-        normalizedText.includes(term.term.toLowerCase()) ||
-        normalizedText.includes(term.fullName.toLowerCase())
-      ) {
-        foundTerms.push(term);
+    // Prefer longer names first so "Social Skills" wins over partial matches
+    const sorted = [...this.terms].sort(
+      (a, b) =>
+        Math.max(b.term.length, b.fullName.length) -
+        Math.max(a.term.length, a.fullName.length)
+    );
+
+    for (const term of sorted) {
+      const candidates = [term.term, term.fullName].filter(Boolean);
+      const matched = candidates.some((name) => {
+        const escaped = name.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        // Allow flexible whitespace in multi-word names
+        const pattern = escaped.replace(/\s+/g, '\\s+');
+        const re = new RegExp(`(^|[^a-z0-9])${pattern}([^a-z0-9]|$)`, 'i');
+        return re.test(normalizedText);
+      });
+
+      if (matched && !seen.has(term.term.toLowerCase())) {
+        seen.add(term.term.toLowerCase());
+        found.push(term);
       }
-    });
+    }
 
-    return foundTerms;
+    return found;
+  }
+
+  /**
+   * Find the best glossary term(s) for a chat question.
+   * Handles phrasing like "what is an IEP?", "explain stimming", "meaning of ABA".
+   */
+  findTermsForChatQuery(message: string): Term[] {
+    const direct = this.findTermsInText(message);
+    if (direct.length > 0) {
+      return direct;
+    }
+
+    // Extract candidate after common question patterns
+    const patterns = [
+      /what\s+(?:is|are|does)\s+(?:an?\s+|the\s+)?(.+?)(?:\?|$)/i,
+      /explain\s+(?:what\s+)?(?:an?\s+|the\s+)?(.+?)(?:\?|$)/i,
+      /(?:meaning|definition)\s+of\s+(?:an?\s+|the\s+)?(.+?)(?:\?|$)/i,
+      /tell\s+me\s+about\s+(?:an?\s+|the\s+)?(.+?)(?:\?|$)/i,
+      /help\s+me\s+understand\s+(?:an?\s+|the\s+)?(.+?)(?:\?|$)/i,
+    ];
+
+    for (const pattern of patterns) {
+      const match = message.match(pattern);
+      if (match?.[1]) {
+        const candidate = match[1].replace(/[?.!,]+$/, '').trim();
+        const term = this.searchTerm(candidate);
+        if (term) {
+          return [term];
+        }
+        // Try first few words of the candidate
+        const words = candidate.split(/\s+/).slice(0, 4).join(' ');
+        const partial = this.searchTerm(words);
+        if (partial) {
+          return [partial];
+        }
+      }
+    }
+
+    // Last resort: searchTerm on the whole message
+    const fuzzy = this.searchTerm(message);
+    return fuzzy ? [fuzzy] : [];
   }
 
   /**

@@ -221,15 +221,17 @@ export class QueryService {
 
     // Check safety
     const safetyCheck = await safetyService.checkQuery(message);
+
+    // Resolve glossary terms for this chat question (drives in-chat videos)
+    const mentionedTerms = knowledgeBaseService.findTermsForChatQuery(message);
+
     if (!safetyCheck.isSafe) {
       return {
         response: safetyCheck.suggestedResponse || 'Query not allowed',
         isMedicalAdvice: true,
+        foundTerms: mentionedTerms,
       };
     }
-
-    // Check if message mentions any terms from our knowledge base
-    const mentionedTerms = knowledgeBaseService.findTermsInText(message);
 
     // RAG: Retrieve relevant document chunks using hybrid search and re-ranking
     let ragContext = '';

@@ -57,22 +57,24 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
               </div>
             )}
 
-            <p className="whitespace-pre-wrap">{message.content}</p>
-
+            {/* Videos first in chat so they play as soon as a term is asked */}
             {message.role === 'assistant' &&
               message.relatedTerms &&
               message.relatedTerms.length > 0 && (
-                <div className="mt-4 pt-3 border-t border-gray-200 space-y-4">
+                <div className="mb-4 space-y-4">
                   {message.relatedTerms.map((t) => (
                     <TermVideos
                       key={t.term}
                       termName={t.term}
                       videos={t.videos}
                       compact
+                      autoPlay
                     />
                   ))}
                 </div>
               )}
+
+            <p className="whitespace-pre-wrap">{message.content}</p>
 
             <div
               className={`text-xs mt-2 ${

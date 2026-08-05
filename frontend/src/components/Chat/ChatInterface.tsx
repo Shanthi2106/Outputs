@@ -71,20 +71,48 @@ export default function ChatInterface({ initialMessages, conversationName }: Cha
       // Send message to API
       const response = await api.sendMessage(content, history);
 
-      // Add assistant response — show videos (or YouTube search) for glossary terms found
+      let relatedTerms =
+        response.foundTerms && response.foundTerms.length > 0
+          ? response.foundTerms.map((t) => ({
+              term: t.term,
+              videos: t.videos || [],
+            }))
+          : undefined;
+
+      // Client fallback: if backend didn't attach terms/videos, match against glossary
+      if (!relatedTerms?.length || !relatedTerms.some((t) => (t.videos?.length || 0) > 0)) {
+        try {
+          const termsData = await api.getAllTerms();
+          const allTerms = termsData.terms || [];
+          const lower = content.toLowerCase();
+          const matched = allTerms.filter(
+            (t: { term: string; fullName: string }) =>
+              lower.includes(t.term.toLowerCase()) ||
+              lower.includes(t.fullName.toLowerCase())
+          );
+          if (matched.length > 0) {
+            relatedTerms = matched.map(
+              (t: {
+                term: string;
+                videos?: Array<{ title: string; youtubeId: string; source?: string }>;
+              }) => ({
+                term: t.term,
+                videos: t.videos || [],
+              })
+            );
+          }
+        } catch {
+          // ignore fallback errors
+        }
+      }
+
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: response.response,
         timestamp: new Date(),
         isMedicalAdviceWarning: response.isMedicalAdvice,
-        relatedTerms:
-          response.foundTerms && response.foundTerms.length > 0
-            ? response.foundTerms.map((t) => ({
-                term: t.term,
-                videos: t.videos || [],
-              }))
-            : undefined,
+        relatedTerms,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
