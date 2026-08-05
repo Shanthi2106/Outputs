@@ -42,17 +42,10 @@ export default function TermCard({ term, onClick }: TermCardProps) {
       </p>
 
       {/* Learn More Button */}
-      <div className="flex items-center justify-between">
-        <button className="text-primary-600 hover:text-primary-700 font-medium text-sm flex items-center">
-          Learn More
-          <span className="ml-1">→</span>
-        </button>
-        {term.videos && term.videos.length > 0 && (
-          <span className="text-xs text-gray-500 flex items-center" title="Includes helpful videos">
-            ▶️ Video
-          </span>
-        )}
-      </div>
+      <button className="text-primary-600 hover:text-primary-700 font-medium text-sm flex items-center">
+        Learn More
+        <span className="ml-1">→</span>
+      </button>
     </div>
   );
 }

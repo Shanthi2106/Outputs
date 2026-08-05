@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { Term } from '@/types';
-import TermVideos from '../Common/TermVideos';
 
 interface TermDetailModalProps {
   term: Term;
@@ -66,9 +65,6 @@ export default function TermDetailModal({ term, onClose }: TermDetailModalProps)
               {term.plainLanguage}
             </p>
           </div>
-
-          {/* Educational videos */}
-          <TermVideos videos={term.videos} termName={term.term} />
 
           {/* Examples */}
           {term.examples && term.examples.length > 0 && (
